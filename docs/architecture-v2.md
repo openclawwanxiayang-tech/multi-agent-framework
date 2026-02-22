@@ -1,4 +1,4 @@
-# Multi-Agent Framework Architecture v2
+# Multi-Agent Framework Architecture v2.1
 
 ## Design Principles
 
@@ -8,154 +8,181 @@
 | **Provider-agnostic** | Abstract LLM layer, easy to switch providers |
 | **Role-based** | Adding roles = adding config, not code |
 | **Robust** | Error handling, fallbacks, observability |
-| **Observable** | Logs, metrics, traceability |
+| **SOP-driven** | Follow MetaGPT's Software Company workflow |
 
 ---
 
-## Architecture Overview
+## Team Structure (MetaGPT-inspired)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Admin (Orchestrator)                      │
-│                    (Minimax M2.5 - default)                     │
-│                                                                  │
-│  - Task routing & coordination                                   │
-│  - Quality gates & approval                                     │
-│  - Provider selection                                           │
+│                     Product Manager (PM)                         │
+│                  Requirement Analysis & Spec                     │
+│                  Workspace: ~/pm-workspace                      │
 └─────────────────────────────────────────────────────────────────┘
-         │                    │                     │
-         ▼                    ▼                     ▼
-┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-│   Role: PM      │  │  Role: Dev      │  │  Role: [NEW]    │
-│   Provider: X   │  │  Provider: Y    │  │  Provider: Z    │
-│   Workspace: ~/ │  │  Workspace: ~/ │  │  Workspace: ~/  │
-│     pm-workspace│  │  codex-workspace│  │    custom-ws    │
-└─────────────────┘  └─────────────────┘  └─────────────────┘
-         │                    │                     │
-         └────────────────────┴─────────────────────┘
                               │
-                    ┌─────────▼─────────┐
-                    │  Shared Context   │
-                    │  (Artifacts,     │
-                    │   State, Memory) │
-                    └──────────────────┘
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    UI/UX Designer                               │
+│              User Interface & Experience Design                │
+│              Workspace: ~/designer-workspace                   │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌───────────────────┐ ┌───────────────────┐ ┌───────────────────┐
+│   Developer 1     │ │   Developer 2     │ │   Developer N     │
+│   (Frontend)      │ │   (Backend)       │ │   (Specialist)    │
+│   Provider: X    │ │   Provider: Y    │ │   Provider: Z    │
+└───────────────────┘ └───────────────────┘ └───────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                        QA Engineer                              │
+│                  Testing & Quality Assurance                    │
+│                  Workspace: ~/qa-workspace                      │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                    ┌───────────────┐
+                    │     Admin     │
+                    │  (Coordinator)│
+                    └───────────────┘
 ```
 
 ---
 
-## Core Components
+## Standard Operating Procedure (SOP)
 
-### 1. Provider Abstraction Layer
-
-```yaml
-# config/providers.yaml
-providers:
-  openai:
-    enabled: true
-    default_model: gpt-5.3-codex
-    fallback: gpt-4o
-    
-  anthropic:
-    enabled: true
-    default_model: claude-sonnet-4-20250514
-    fallback: claude-3-5-sonnet
-    
-  minimax:
-    enabled: true
-    default_model: MiniMax-M2.5
-    fallback: MiniMax-M2.1
-    
-  ollama:
-    enabled: false
-    default_model: qwen2.5-coder
 ```
-
-**Why**: Switch providers without changing agent code
+User Request
+    │
+    ▼
+┌─────────────────┐
+│      PM        │  ← Input: User requirement
+│  Requirement    │
+│  Analysis       │
+│  + Spec         │
+└─────────────────┘
+    │ Output: SPEC.md (requirements, user stories)
+    ▼
+┌─────────────────┐
+│   UI/UX        │  ← Input: SPEC.md
+│   Designer     │
+│  Architecture  │
+│  + UI Design   │
+└─────────────────┘
+    │ Output: design.md (UI mockups, component specs)
+    ▼
+┌─────────────────┐
+│   Developers   │  ← Input: SPEC.md + design.md
+│   Implement    │
+│   Features    │
+└─────────────────┘
+    │ Output: code/ (implemented features)
+    ▼
+┌─────────────────┐
+│      QA        │  ← Input: code/ + SPEC.md
+│   Testing      │
+│   & Review     │
+└─────────────────┘
+    │ Output: test results + bug reports
+    ▼
+    Done / Return to PM for revision
+```
 
 ---
 
-### 2. Role Registry
+## Provider Flexibility
+
+Each role can use different providers - mix and match:
 
 ```yaml
-# config/roles.yaml
 roles:
   pm:
-    name: Product Manager
-    description: Creates specs, plans tasks, defines requirements
-    default_provider: minimax
-    default_model: MiniMax-M2.5
+    provider: minimax
+    model: MiniMax-M2.5
     workspace: ~/pm-workspace
-    tools:
-      - file_read
-      - file_write
-      - github_issues
-    skills:
-      - brainstorming
     
-  dev:
-    name: Developer
-    description: Writes code, implements features
-    default_provider: openai
-    default_model: gpt-5.3-codex
-    workspace: ~/codex-workspace
-    tools:
-      - file_read
-      - file_write
-      - exec
-      - github
-      - browser
-    skills:
-      - coding-agent
-      
-  reviewer:
-    name: Code Reviewer
-    description: Reviews code, validates quality
-    default_provider: anthropic
-    default_model: claude-sonnet-4-20250514
-    workspace: ~/reviewer-workspace
-    tools:
-      - file_read
-      - github_pr
-    skills: []
-
-  # Adding new role = just add config
-  researcher:
-    name: Researcher
-    description: Conducts research, gathers information
-    default_provider: minimax
-    default_model: MiniMax-M2.5
-    workspace: ~/research-workspace
-    tools:
-      - web_search
-      - web_fetch
-    skills: []
+  designer:
+    provider: anthropic
+    model: claude-sonnet-4-20250514
+    workspace: ~/designer-workspace
+    
+  dev_frontend:
+    provider: openai
+    model: gpt-5.3-codex
+    workspace: ~/dev-frontend-workspace
+    
+  dev_backend:
+    provider: openai
+    model: gpt-5.3-codex
+    workspace: ~/dev-backend-workspace
+    
+  qa:
+    provider: anthropic
+    model: claude-3-5-sonnet
+    workspace: ~/qa-workspace
 ```
 
 ---
 
-### 3. Task Lifecycle (from agent-team-orchestration)
+## Role Definitions
+
+### 1. Product Manager (PM)
+- **Responsibility**: Requirement analysis, spec writing, prioritization
+- **Input**: User raw requirement
+- **Output**: SPEC.md (detailed requirements, user stories)
+- **Skills**: brainstorming, requirement analysis
+
+### 2. UI/UX Designer
+- **Responsibility**: Interface design, user experience
+- **Input**: SPEC.md
+- **Output**: design.md (component specs, layout, UX flows)
+- **Skills**: UI design knowledge
+
+### 3. Developers (Multiple)
+- **Responsibility**: Implementation
+- **Input**: SPEC.md + design.md
+- **Output**: Working code
+- **Types**: Frontend, Backend, Full-stack, Specialist
+- **Skills**: coding-agent, language-specific
+
+### 4. QA Engineer
+- **Responsibility**: Testing, quality assurance
+- **Input**: Implemented code + SPEC.md
+- **Output**: Test results, bug reports
+- **Skills**: testing frameworks
+
+### 5. Admin (Orchestrator)
+- **Responsibility**: Coordinate SOP, route tasks, quality gates
+- **Input**: Task from user
+- **Output**: Final result to user
+- **Skills**: agent-team-orchestration
+
+---
+
+## Task Lifecycle
 
 ```
 Inbox → Assigned → In Progress → Review → Done | Failed
+         │           │            │        │
+         ▼           ▼            ▼        ▼
+      Task is    Worker is    Worker   Quality
+      received   working on   finishes check
+                 task         task
 ```
-
-Each transition includes:
-- Timestamp
-- Actor (who)
-- Artifact path
-- Notes
 
 ---
 
-### 4. Handoff Protocol
+## Handoff Protocol
 
-Every handoff includes:
+Each handoff MUST include:
 
-1. **What was done** - summary
-2. **Where artifacts are** - exact paths
-3. **How to verify** - test commands, acceptance criteria
-4. **Known issues** - anything incomplete/risky
-5. **What's next** - clear next action
+1. **What was done** - Summary of work completed
+2. **Where artifacts are** - Exact file paths
+3. **How to verify** - Test commands, acceptance criteria
+4. **Known issues** - Anything incomplete or risky
+5. **What's next** - Clear next action for receiving role
 
 ---
 
@@ -165,24 +192,27 @@ Every handoff includes:
 multi-agent-framework/
 ├── config/
 │   ├── providers.yaml      # LLM provider configs
-│   ├── roles.yaml         # Role definitions
+│   ├── roles.yaml         # Role definitions (PM, Designer, Devs, QA)
 │   ├── tasks.yaml         # Task templates
-│   └── workflow.yaml      # Workflow definitions
+│   └── workflow.yaml      # SOP workflow definition
 │
 ├── workspaces/             # Agent workspaces
 │   ├── pm-workspace/
-│   ├── codex-workspace/
-│   ├── reviewer-workspace/
-│   └── [new-role]-workspace/
+│   ├── designer-workspace/
+│   ├── dev-frontend-workspace/
+│   ├── dev-backend-workspace/
+│   ├── qa-workspace/
+│   └── admin-workspace/    # My workspace
 │
-├── artifacts/              # Shared outputs
+├── artifacts/              # Shared outputs (SOP artifacts)
 │   ├── tasks/
 │   │   └── {task-id}/
-│   │       ├── brief.md
-│   │       ├── spec.md
-│   │       ├── implementation.md
-│   │       └── review.md
-│   └── state.json         # Global state
+│   │       ├── 01-requirement.md    # PM output
+│   │       ├── 02-design.md         # Designer output
+│   │       ├── 03-implementation/   # Dev output
+│   │       ├── 04-testing.md        # QA output
+│   │       └── state.json           # Task state
+│   └── shared/              # Shared context (SPEC.md, etc.)
 │
 ├── skills/                # Reusable skills
 │   ├── agent-team-orchestration/
@@ -195,77 +225,48 @@ multi-agent-framework/
 
 ---
 
-## Key Features
-
-### Provider Switching
-```yaml
-# To switch provider for a role:
-roles:
-  dev:
-    provider: anthropic   # Change from openai to anthropic
-    model: claude-sonnet-4-20250514
-```
-
-### Adding New Role
-```yaml
-# Just add to roles.yaml:
-roles:
-  new_role:
-    name: My New Role
-    workspace: ~/new-workspace
-    # ... rest of config
-```
-
-### Fallback机制
-```yaml
-# If primary provider fails, auto-fallback
-providers:
-  openai:
-    fallback: anthropic  # Chain fallback
-```
-
----
-
 ## Implementation Phases
 
-### Phase 1: Infrastructure (Current)
-- [x] Create workspaces
-- [x] Document agent profiles
-- [ ] Create config directory structure
-- [ ] Define providers.yaml
-- [ ] Define roles.yaml
+### Phase 1: Infrastructure & Config (Current)
+- [x] Workspaces created
+- [ ] Config directory structure
+- [ ] providers.yaml
+- [ ] roles.yaml (full team)
+- [ ] workflow.yaml (SOP)
 
 ### Phase 2: Core Framework
-- [ ] Build provider abstraction
-- [ ] Implement role registry
-- [ ] Create task lifecycle manager
-- [ ] Set up handoff protocols
+- Provider abstraction
+- Role registry
+- Task lifecycle
+- Handoff protocols
 
-### Phase 3: Agent Implementation
-- [ ] Implement PM agent
-- [ ] Implement Dev agent
-- [ ] Implement Reviewer
-- [ ] Test inter-agent communication
+### Phase 3: PM + Designer First
+- Implement PM role
+- Implement Designer role
+- Test requirement → spec → design flow
 
-### Phase 4: Robustness
-- [ ] Add error handling
-- [ ] Implement fallbacks
-- [ ] Add logging/observability
-- [ ] Create monitoring dashboard
+### Phase 4: Developers
+- Implement Dev roles (frontend, backend)
+- Implement code generation
+- Test implementation flow
 
-### Phase 5: Extension
-- [ ] Add more roles
-- [ ] Create custom skills
-- [ ] Build visualization
+### Phase 5: QA
+- Implement QA role
+- Testing workflow
+- Full SOP integration
+
+### Phase 6: Robustness
+- Error handling
+- Fallbacks
+- Observability
 
 ---
 
 ## References
 
-- LangGraph: Graph-based orchestration
-- VoltAgent: Modular, pluggable architecture
-- Databricks: Modular engineering for AI agents
-- Google ADK: Provider abstraction patterns
+- MetaGPT: https://github.com/FoundationAgents/MetaGPT
+- MetaGPT Paper: Code = SOP(Team)
+- CrewAI: Role-based agents
 
 ---
 
