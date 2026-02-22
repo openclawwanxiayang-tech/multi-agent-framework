@@ -19,9 +19,9 @@ PM Agent  Codex Agent  (parallel when independent)
 ## Phase 1: Infrastructure Setup
 
 ### Task 1.1: Create Workspaces
-- [ ] Create developer workspace (~/codex-workspace or similar)
-- [ ] Create PM workspace (~/pm-workspace or similar)
-- [ ] Test file operations in each
+- [x] Create developer workspace (~/codex-workspace)
+- [x] Create PM workspace (~/pm-workspace)
+- [x] Test file operations in each
 
 ### Task 1.2: Configure Sub-agent Profiles
 - [ ] Define Codex developer agent config (model: openai-codex, workspace)
