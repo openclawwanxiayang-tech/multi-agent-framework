@@ -1,77 +1,131 @@
 # Multi-Agent Framework - Task List
 
-## Architecture Decision: Hierarchical Hybrid
+## Design Principles
 
-```
-User → Admin (sequential coordination)
-         ↓
-    ┌────┴────┐
-    ↓         ↓
-PM Agent  Codex Agent  (parallel when independent)
-    ↓         ↓
-    └────┬────┘
-         ↓
-    Review (sequential gate)
-```
+| Principle | Description |
+|-----------|-------------|
+| **Modular** | Each component is independent, loosely coupled |
+| **Provider-agnostic** | Abstract LLM layer, easy to switch providers |
+| **Role-based** | Adding roles = adding config, not code |
+| **Robust** | Error handling, fallbacks, observability |
 
 ---
 
-## Phase 1: Infrastructure Setup
-
-### Task 1.1: Create Workspaces
-- [x] Create developer workspace (~/codex-workspace)
-- [x] Create PM workspace (~/pm-workspace)
-- [x] Test file operations in each
-
-### Task 1.2: Configure Sub-agent Profiles
-- [x] Define Codex developer agent config (model: openai-codex, workspace)
-- [x] Define PM agent config (model: minimax-m2.5, workspace)
-- [x] Document agent profiles in docs/
+## Architecture: See `docs/architecture-v2.md`
 
 ---
 
-## Phase 2: Sub-agent Framework
+## Phase 1: Infrastructure & Config
 
-### Task 2.1: Spawn Sub-agents
-- [ ] Test spawning Codex agent with specific workspace
-- [ ] Test spawning PM agent with specific workspace
-- [ ] Verify each uses correct model
+### 1.1 Workspaces (DONE ✅)
+- [x] Create ~/codex-workspace
+- [x] Create ~/pm-workspace
 
-### Task 2.2: Task Templates
-- [ ] Create delegation templates (how to assign work)
-- [ ] Define output formats for sub-agent results
-- [ ] Set up review/approval workflow
+### 1.2 Configuration System
+- [ ] Create `config/` directory structure
+- [ ] Create `config/providers.yaml` - LLM provider configs
+- [ ] Create `config/roles.yaml` - Role definitions
+- [ ] Create `config/tasks.yaml` - Task templates
+- [ ] Create `config/workflow.yaml` - Workflow definitions
 
----
-
-## Phase 3: Integration
-
-### Task 3.1: GitHub Integration
-- [ ] Verify `gh` CLI auth
-- [ ] Test issues/PRs operations
-- [ ] Document in skills
-
-### Task 3.2: Discord Integration
-- [ ] Review/enhance Discord capabilities
+### 1.3 Shared Artifacts
+- [ ] Create `artifacts/tasks/` - Task outputs
+- [ ] Create `artifacts/state.json` - Global state
+- [ ] Create `logs/` - Execution logs
 
 ---
 
-## Phase 4: Advanced
+## Phase 2: Core Framework
 
-### Task 4.1: Custom Skills
-- [ ] Build reusable skills for common tasks
+### 2.1 Provider Abstraction
+- [ ] Build provider config loader
+- [ ] Implement fallback chain
+- [ ] Test provider switching
 
-### Task 4.2: Monitoring
-- [ ] Track sub-agent activity
-- [ ] Set up reporting
+### 2.2 Role Registry
+- [ ] Build role config loader
+- [ ] Implement workspace isolation
+- [ ] Add role validation
+
+### 2.3 Task Lifecycle Manager
+- [ ] Implement task states (Inbox → Review → Done)
+- [ ] Add state transitions with timestamps
+- [ ] Create artifact tracking
+
+### 2.4 Handoff Protocol
+- [ ] Define handoff message format
+- [ ] Implement artifact path tracking
+- [ ] Add verification steps
 
 ---
 
-## Key References
+## Phase 3: Agent Implementation
 
-- Installed skill: `agent-team-orchestration` - for roles, task states, handoffs
-- Installed skill: `brainstorming` - for creative phase before implementation
+### 3.1 PM Agent
+- [ ] Configure PM role in roles.yaml
+- [ ] Test spawning PM agent
+- [ ] Test spec generation
+
+### 3.2 Developer Agent
+- [ ] Configure Dev role in roles.yaml
+- [ ] Test spawning Dev agent
+- [ ] Test code generation
+
+### 3.3 Reviewer Agent
+- [ ] Configure Reviewer role
+- [ ] Implement review workflow
+
+### 3.4 Inter-Agent Communication
+- [ ] Test PM → Dev handoff
+- [ ] Test Dev → Reviewer handoff
+- [ ] Test full pipeline
 
 ---
 
-*Status: Ready to start Phase 1*
+## Phase 4: Robustness
+
+### 4.1 Error Handling
+- [ ] Add timeout handling
+- [ ] Implement retry logic
+- [ ] Add graceful degradation
+
+### 4.2 Fallbacks
+- [ ] Provider fallback chain
+- [ ] Model fallback
+- [ ] Workspace fallback
+
+### 4.3 Observability
+- [ ] Add structured logging
+- [ ] Create execution traces
+- [ ] Build monitoring
+
+---
+
+## Phase 5: Extension
+
+### 5.1 New Roles
+- [ ] Add Researcher role (easy - just config)
+- [ ] Add any custom roles as needed
+
+### 5.2 Custom Skills
+- [ ] Build reusable skills
+- [ ] Add skill registry
+
+### 5.3 Visualization
+- [ ] Task flow visualization
+- [ ] Agent status dashboard
+
+---
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `config/providers.yaml` | LLM provider configs |
+| `config/roles.yaml` | Role definitions |
+| `artifacts/tasks/{id}/` | Task outputs |
+| `skills/` | Reusable skills |
+
+---
+
+*Status: Ready for Phase 1.2* - *Start: Config System*
