@@ -27,11 +27,18 @@
 
 ---
 
-## SOP (Standard Operating Procedure)
+## GitHub Workflow (Per Deliverable)
 
-```
-User Request → PM (Spec) → Designer (Design) → Devs (Code) → QA (Test) → Done
-```
+Every deliverable follows PR workflow:
+
+| Stage | Branch | Action |
+|-------|--------|--------|
+| Spec | `feature/{id}/spec` | Create → PR → Review → Merge |
+| Design | `feature/{id}/design` | Create → PR → Review → Merge |
+| Implementation | `feature/{id}/impl` | Create → PR → Review → Merge |
+| Test | `feature/{id}/test` | Create → PR → Review → Merge |
+
+**Rule**: No direct commits to main. Every change goes through PR review.
 
 ---
 

@@ -174,6 +174,104 @@ Inbox → Assigned → In Progress → Review → Done | Failed
 
 ---
 
+## GitHub Workflow (Per Deliverable)
+
+Every project/task follows proper PR workflow:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Project Setup                             │
+│                    Create Repo (if new)                          │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    PM: Requirement Spec                         │
+│                    Branch: feature/{task}/spec                  │
+│                    File: SPEC.md                                │
+│                    → Open PR → Review → Merge                   │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                 Designer: UI/UX Design                          │
+│                 Branch: feature/{task}/design                   │
+│                 File: design.md                                 │
+│                 → Open PR → Review → Merge                      │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    Developer: Implementation                    │
+│                    Branch: feature/{task}/impl                  │
+│                    Files: code/, tests/                         │
+│                    → Open PR → Review → Merge                   │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      QA: Testing                                │
+│                    Branch: feature/{task}/test                 │
+│                    File: test-results.md                       │
+│                    → Open PR → Review → Merge                  │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                         Master/Main
+```
+
+---
+
+## PR Review Protocol
+
+| Stage | Reviewer | Purpose |
+|-------|----------|---------|
+| Spec | Admin | Feasibility, completeness |
+| Design | Admin + PM | UX, usability |
+| Implementation | Admin + QA | Code quality, tests |
+| Test | Admin + Dev | Coverage, correctness |
+
+**Each PR must:**
+- Pass automated checks
+- Have at least 1 approval
+- Pass review before merge
+
+---
+
+## GitHub Integration Config
+
+```yaml
+github:
+  organization: openclawwanxiayang-tech
+  
+  repos:
+    # Auto-created per project
+    pattern: "maf-{project-name}"
+    
+  branches:
+    main: main
+    feature: "feature/{task-id}/{type}"
+    bugfix: "bugfix/{task-id}/{type}"
+    
+  review:
+    required_approvals: 1
+    auto_merge: false
+    auto_delete_branch: true
+```
+
+---
+
+## Task → PR Mapping
+
+| Task Stage | Branch | PR Title | Files |
+|------------|--------|----------|-------|
+| Spec | `feature/{id}/spec` | "[Spec] {task name}" | SPEC.md |
+| Design | `feature/{id}/design` | "[Design] {task name}" | design.md |
+| Implementation | `feature/{id}/impl` | "[Impl] {task name}" | code/, tests/ |
+| Test | `feature/{id}/test` | "[Test] {task name}" | test-results.md |
+
+---
+
 ## Handoff Protocol
 
 Each handoff MUST include:
