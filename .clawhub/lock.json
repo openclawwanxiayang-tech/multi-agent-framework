@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "skills": {
+    "agent-team-orchestration": {
+      "version": "1.0.0",
+      "installedAt": 1771760841133
+    },
+    "brainstorming": {
+      "version": "0.1.0",
+      "installedAt": 1771760849166
+    }
+  }
+}

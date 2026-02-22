@@ -24,9 +24,9 @@ PM Agent  Codex Agent  (parallel when independent)
 - [x] Test file operations in each
 
 ### Task 1.2: Configure Sub-agent Profiles
-- [ ] Define Codex developer agent config (model: openai-codex, workspace)
-- [ ] Define PM agent config (model: minimax-m2.5, workspace)
-- [ ] Document agent profiles in docs/
+- [x] Define Codex developer agent config (model: openai-codex, workspace)
+- [x] Define PM agent config (model: minimax-m2.5, workspace)
+- [x] Document agent profiles in docs/
 
 ---
 
