@@ -42,6 +42,23 @@ Every deliverable follows PR workflow:
 
 ---
 
+## Agent-Friendly Repository
+
+Created:
+- `AGENTS.md` - Main agent guide (Anthropic best practices)
+- `.github/agents/pm-agent.md` - PM agent definition
+- `.github/agents/dev-agent.md` - Developer agent definition
+- `.github/agents/qa-agent.md` - QA agent definition
+
+Each agent has:
+- Clear role and responsibilities
+- Workspace boundaries
+- Commands they can run
+- Git workflow they must follow
+- What to NEVER do
+
+---
+
 ## Phase 1: Infrastructure & Config
 
 ### 1.1 Workspaces (DONE ✅)
