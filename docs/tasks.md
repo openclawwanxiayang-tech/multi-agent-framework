@@ -16,6 +16,37 @@
 
 ---
 
+## v2.2 MVP Scope (Frozen)
+
+This section defines exactly what "v2.2 MVP" includes. All other features are explicitly deferred.
+
+### MVP Includes (Locked)
+
+| Feature | Status |
+|---------|--------|
+| **Pipeline mode only** | ✅ Default and only mode for MVP |
+| **Repo-native queue** | ✅ `artifacts/tasks/*/state.json` file-based |
+| **events.ndjson logging** | ✅ Structured event log with trace_id |
+| **Policy engine v1** | ✅ allow/deny/require-approval hooks |
+| **E2E vertical slice** | ✅ One end-to-end run proving the loop |
+
+### Explicitly Deferred (Not in MVP)
+
+| Feature | Reason |
+|---------|--------|
+| Map-reduce mechanics | Deferred to v2.3 |
+| MCP integration | Optional, external tools only |
+| Chat platforms (Discord/Telegram/Feishu) | Deferred to v2.3 |
+| Dashboards / exports | Nice-to-have, deferred |
+| Incident mode | Deferred to v2.3 |
+| LangSmith/ELK export | Optional, deferred |
+
+### Why Freeze Scope?
+
+Prevents thrash and scope creep. Get a working Pipeline E2E loop first.
+
+---
+
 ## v2.2 System Overview (Conceptual)
 
 **Orchestration loop**:
