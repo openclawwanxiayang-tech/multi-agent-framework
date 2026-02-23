@@ -14,4 +14,8 @@
    - Check latest commit timestamp in workspace git.
    - Alert if no new commit for > 90 minutes during the 12h run window.
 
-4. If all checks pass, return `HEARTBEAT_OK`.
+4. Verify TODO board is being maintained:
+   - File: `docs/plans/2026-02-23-overnight-todo.md`
+   - Alert if missing, or if no status changes/update entries for > 30 minutes during active run.
+
+5. If all checks pass, return `HEARTBEAT_OK`.
