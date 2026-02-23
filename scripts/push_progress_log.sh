@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -u
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
 
 WORKDIR="/home/lenovo/.openclaw/workspace"
 LOG_FILE="$WORKDIR/docs/plans/2026-02-23-overnight-autonomous-run-log.md"
