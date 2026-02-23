@@ -115,17 +115,42 @@ Recent guidance stresses:
 
 We propose a **flow-based orchestrator** (inspired by CrewAI) with a central *Admin/Orchestrator agent* defining the task flow.
 
-```mermaid
-graph LR
-    U[User Request] --> A((Admin/Coordinator))
-    A --> P[PM Agent: Requirement Analysis]
-    A --> D[Designer Agent: UI/UX Plan]
-    P --> M{Merge Docs}
-    D --> M
-    M --> E[Developer Agent: Implement Features]
-    E --> R[Reviewer Agent: Code Review]
-    R --> Q[QA Agent: Testing]
-    Q --> C((Completed Deliverable))
+```
+User Request
+     │
+     ▼
+┌─────────────────┐
+│ Admin/Coordinator│
+└────────┬────────┘
+         │
+    ┌────┴────┐
+    ▼         ▼
+PM Agent   Designer Agent
+    │         │
+    └────┬────┘
+         │
+         ▼
+┌─────────────────┐
+│  Merge Docs     │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Developer Agent │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Reviewer Agent  │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│   QA Agent      │
+└────────┬────────┘
+         │
+         ▼
+  Completed
 ```
 
 **Roles:**
@@ -137,18 +162,39 @@ graph LR
 
 ### Task Lifecycle (Pipeline)
 
-```mermaid
-flowchart LR
-    NewTask(New Request) --> Plan[Analysis/Planning]
-    Plan --> {Parallel?}
-    {Parallel?} -->|Yes| DesignPhase[Parallel Execution: PM, Designer]
-    {Parallel?} -->|No| SeqPhase[Sequential Execution]
-    DesignPhase --> Merge[Merge Outputs]
-    SeqPhase --> Merge
-    Merge --> DevExecution[Development & Tools]
-    DevExecution --> Verify[Validation / Testing]
-    Verify --> Complete[Completion]
 ```
+New Request
+     │
+     ▼
+Analysis/Planning
+     │
+     ▼
+┌─────────────────────┐
+│  Parallel?          │
+│  (Yes/No branch)    │
+└─────────┬───────────┘
+          │
+    ┌─────┴─────┐
+    ▼           ▼
+Parallel    Sequential
+Execution   Execution
+    │           │
+    └─────┬─────┘
+          │
+          ▼
+   Merge Outputs
+          │
+          ▼
+Development & Tools
+          │
+          ▼
+Validation/Testing
+          │
+          ▼
+    Completion
+```
+
+**States:** New → Planning → InProgress → Review → Done
 
 **States:** New → Planning → InProgress → Review → Done
 
