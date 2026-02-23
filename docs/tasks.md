@@ -1,6 +1,7 @@
-# Multi-Agent Framework - Task List v2.2
+# Multi-Agent Framework - Task List v2.2 (Revised)
 
 > Aligned with architecture-v2.2 and research.md v2.2
+> Revision goals: remove duplicate logging tasks, move minimum governance earlier, add E2E vertical slice, make concurrency + map-reduce implementable.
 
 ---
 
@@ -15,11 +16,14 @@
 
 ---
 
-## v2.2 System Overview
+## v2.2 System Overview (Conceptual)
 
-```
-User → Orchestrator → Workers → Blackboard → Queue → Policy Engine
-```
+**Orchestration loop**:
+User → Orchestrator → (Policy checks) → Workers → (Artifacts + Logs) → Orchestrator
+
+**Shared stores**:
+- Blackboard = shared task content & decisions & artifacts
+- Queue/State = workflow control & assignments & transitions
 
 ---
 
@@ -41,7 +45,7 @@ User → Orchestrator → Workers → Blackboard → Queue → Policy Engine
 | Mode | When to Use |
 |------|-------------|
 | **Pipeline** (default) | PM → Design → Dev → QA → Release |
-| **Map-Reduce** | Parallel workers → merge → verify |
+| **Map-Reduce** | Parallel workers → reduce/merge → verify |
 | **Incident** | Triage → minimal tools → human approval |
 
 ---
@@ -68,98 +72,118 @@ User → Orchestrator → Workers → Blackboard → Queue → Policy Engine
 
 **Rule**: No direct commits to main. Every change goes through PR review.
 
+> Note (practical): consider a "low-risk fast lane" later (still PR-based) for tiny doc-only changes to avoid 4-PR overhead.
+
 ---
 
 ## Implementation Roadmap
 
-### Milestone 1: Schema & Logging Foundations
+### Milestone 1: Schema & Logging Foundations (Plumbing)
 
 | Task | Status | Description |
 |------|--------|-------------|
 | 1.1 | [ ] | Finalize task.json schema |
 | 1.2 | [ ] | Finalize state.json schema |
 | 1.3 | [ ] | Finalize envelope.json schema |
-| 1.4 | [ ] | Define event log format (NDJSON) |
-| 1.5 | [ ] | Implement trace_id generation |
-| 1.6 | [ ] | Add basic guardrail checks |
+| 1.4 | [ ] | Finalize event log format (NDJSON) + event.json schema |
+| 1.5 | [ ] | Implement trace_id generation + propagation |
+| 1.6 | [ ] | Implement NDJSON event logger (append-only) |
+| 1.7 | [ ] | Define + implement redaction rules for logs (no secrets) |
+| 1.8 | [ ] | Add basic guardrail checks (budget caps, max retries, timeout defaults) |
 
-**Deliverable**: JSON schemas in `docs/schemas/`
+**Deliverable**: JSON schemas in `docs/schemas/` + working `events.ndjson` writer + trace propagation.
 
 ---
 
-### Milestone 2: Blackboard & Queue
+### Milestone 2: Durable Lifecycle MVP (Blackboard + Queue + Minimum Governance)
 
 | Task | Status | Description |
 |------|--------|-------------|
-| 2.1 | [ ] | Define directory structure for artifacts |
-| 2.2 | [ ] | Create blackboard.md per task |
-| 2.3 | [ ] | Implement task.json creation |
-| 2.4 | [ ] | Implement state.json transitions |
-| 2.5 | [ ] | MVP task queue: repo-native (`artifacts/tasks/*/state.json`) + file-locking for concurrency |
-| 2.6 | [ ] | Define stage transitions |
-| 2.7 | [ ] | Implement orchestrator runner: create task folder, update state.json, append events.ndjson |
-| 2.8 | [ ] | Implement resume-from-checkpoint: restart a stage using artifact hashes |
+| 2.1 | [ ] | Define directory structure for artifacts (canonical layout) |
+| 2.2 | [ ] | Create blackboard.md + decisions.md per task |
+| 2.3 | [ ] | Implement task.json creation (new task bootstrap) |
+| 2.4 | [ ] | Implement state.json transitions (stage/status/assigned/retries/next) |
+| 2.5 | [ ] | MVP task queue: repo-native (`artifacts/tasks/*/state.json`) |
+| 2.6 | [ ] | Concurrency protocol: file-lock acquisition, atomic write, stale lock recovery |
+| 2.7 | [ ] | Define stage transitions formally (allowed edges + fail/retry/escalate) |
+| 2.8 | [ ] | Implement orchestrator runner: create task folder, update state.json, append events.ndjson |
+| 2.9 | [ ] | Implement resume-from-checkpoint: restart stage using artifact hashes + idempotency rules |
+| 2.10 | [ ] | Policy engine v1 (minimum): role permissions + tool allow/deny + require-approval hooks |
+| 2.11 | [ ] | Risk tier gates v1: low/medium auto; high/critical block unless approved |
+| 2.12 | [ ] | Implement Mode Router v1 (uses `docs/decider.md` rubric) |
+| 2.13 | [ ] | **E2E vertical slice demo**: run Pipeline end-to-end on a tiny task and produce artifacts+logs |
 
-**Deliverable**: Working task lifecycle (repo-native). Later: optional GitHub Issues/DB-backed queue once MVP is stable.
+**Deliverable**: Working task lifecycle (repo-native), resumable stages, minimum enforcement, and an E2E run proving the loop.
 
 ---
 
-### Milestone 3: Stage Validators
+### Milestone 3: Map-Reduce + Stage Validators (Quality & Parallelism)
+
+#### 3A — Map-Reduce Mechanics
 
 | Task | Status | Description |
 |------|--------|-------------|
-| 3.1 | [ ] | spec_validator.py - validate SPEC.md |
-| 3.2 | [ ] | design_validator.py - validate design.md |
-| 3.3 | [ ] | code_linter.py - validate code |
-| 3.4 | [ ] | qa_checker.py - validate test results |
-| 3.5 | [ ] | Integrate validators into CI |
-| 3.6 | [ ] | Add regression test harness |
+| 3.1 | [ ] | Map-Reduce worker registration: how workers publish outputs to blackboard |
+| 3.2 | [ ] | Reduce strategy v1: merge policy (best-of-n / vote / verifier) |
+| 3.3 | [ ] | Verifier role + criteria for map-reduce outputs |
+| 3.4 | [ ] | Conflict resolution rules (disagreement handling + escalation to human) |
 
-**Deliverable**: Automated validation at each stage
-
----
-
-### Milestone 4: Observability & Governance
+#### 3B — Validators
 
 | Task | Status | Description |
 |------|--------|-------------|
-| 4.1 | [ ] | Set up NDJSON event logger |
-| 4.2 | [ ] | Add trace_id to all agent actions |
-| 4.3 | [ ] | Implement run summary generation |
-| 4.4 | [ ] | Policy engine v1: role permissions |
-| 4.5 | [ ] | Risk tier gates implementation |
-| 4.6 | [ ] | (Optional) Export to LangSmith/ELK |
+| 3.5 | [ ] | spec_validator.py - validate SPEC.md + acceptance criteria |
+| 3.6 | [ ] | design_validator.py - validate design.md covers requirements + states |
+| 3.7 | [ ] | code_linter.py - validate code formatting/static checks |
+| 3.8 | [ ] | qa_checker.py - validate test results + required evidence |
+| 3.9 | [ ] | Integrate validators into CI (PR checks) |
+| 3.10 | [ ] | Add regression test harness (golden tasks + expected artifacts) |
 
-**Deliverable**: Full observability + basic policy enforcement
+**Deliverable**: Parallel mode is real (reduce+verify exists) and stage gates are enforced.
 
 ---
 
-### Milestone 5: MCP Integration (Optional)
+### Milestone 4: Observability & Governance (Upgrades, not Plumbing)
+
+| Task | Status | Description |
+|------|--------|-------------|
+| 4.1 | [ ] | Implement run summary generation (logs/summary.md) |
+| 4.2 | [ ] | Add audit views: per-task timeline + per-agent actions (from events.ndjson) |
+| 4.3 | [ ] | Expand policy engine: richer constraints (file/path restrictions, branch rules, rate limits) |
+| 4.4 | [ ] | Human approval workflow UX (how approvals are recorded + referenced) |
+| 4.5 | [ ] | (Optional) Export to LangSmith/ELK |
+| 4.6 | [ ] | Threat model + red-team tests (prompt injection, tool abuse, artifact poisoning) |
+
+**Deliverable**: Clear audits + stronger governance + optional external observability.
+
+---
+
+### Milestone 5: MCP Integration (Optional, External Tools)
 
 | Task | Status | Description |
 |------|--------|-------------|
 | 5.1 | [ ] | Evaluate MCP server options |
-| 5.2 | [ ] | Deploy FastMCP with curated tools |
+| 5.2 | [ ] | Deploy FastMCP with curated external tools (search/tickets/docs/etc.) |
 | 5.3 | [ ] | Add MCP auth (scoped tokens) |
-| 5.4 | [ ] | Add MCP to tool permission matrix |
-| 5.5 | [ ] | Audit tool call security |
+| 5.4 | [ ] | Add MCP to tool permission matrix (policy enforcement) |
+| 5.5 | [ ] | Audit MCP tool call security (allowlist servers, logging, redaction) |
 
-**Deliverable**: MCP gateway for external tools
+**Deliverable**: MCP gateway for external tools without breaking core repo-native workflow.
 
 ---
 
-### Milestone 6: Agent Accounts (Discord/Telegram/Feishu)
+### Milestone 6: Agent Accounts (Discord/Telegram/Feishu) (Post-MVP)
 
 | Task | Status | Description |
 |------|--------|-------------|
 | 6.1 | [ ] | Hub-and-spoke: monitor mentions |
-| 6.2 | [ ] | Spawn sub-agents on mention |
+| 6.2 | [ ] | Spawn sub-agents on mention (bounded) |
 | 6.3 | [ ] | Route responses back to channel |
 | 6.4 | [ ] | (Future) Separate bot accounts |
 | 6.5 | [ ] | Feishu integration |
 | 6.6 | [ ] | Jira integration |
 
-**Deliverable**: Agents respond in chat platforms
+**Deliverable**: Agents respond in chat platforms (after the core system is stable).
 
 ---
 
@@ -172,7 +196,7 @@ multi-agent-framework/
 │   ├── roles.yaml
 │   ├── tasks.yaml
 │   ├── workflow.yaml
-│   └── policy.yaml          # NEW: Risk tiers, permissions
+│   └── policy.yaml # Risk tiers, permissions, approval rules
 │
 ├── workspaces/
 │   ├── admin-workspace/
@@ -180,7 +204,7 @@ multi-agent-framework/
 │   ├── designer-workspace/
 │   ├── dev-workspace/
 │   ├── qa-workspace/
-│   └── release-workspace/   # NEW
+│   └── release-workspace/
 │
 ├── artifacts/
 │   └── tasks/
@@ -199,17 +223,17 @@ multi-agent-framework/
 │               ├── events.ndjson
 │               └── summary.md
 │
-├── schemas/                 # DONE
+├── schemas/
 │   ├── task.json
 │   ├── state.json
 │   ├── envelope.json
 │   └── event.json
 │
 ├── validators/
-│   ├── spec_validator.py    # TODO
-│   ├── design_validator.py  # TODO
-│   ├── code_linter.py       # TODO
-│   └── qa_checker.py       # TODO
+│   ├── spec_validator.py
+│   ├── design_validator.py
+│   ├── code_linter.py
+│   └── qa_checker.py
 │
 ├── skills/
 │   ├── agent-team-orchestration/
@@ -246,21 +270,11 @@ Each agent has:
 - [ ] Review architecture-v2.md
 - [ ] Review schemas in docs/schemas/
 - [ ] Set up workspaces (or use existing)
-- [ ] Create first task with task.json
-- [ ] Run through pipeline mode
-- [ ] Test validators at each stage
-
----
-
-## Related Documents
-
-| Document | Description |
-|----------|-------------|
-| [`AGENTS.md`](./AGENTS.md) | Agent-friendly repository guide |
-| [`.github/agents/`](.github/agents/) | Agent profile definitions |
-| [`docs/research.md`](./research.md) | Full research and rationale |
+- [ ] Run Pipeline mode end-to-end (Milestone 2.13)
+- [ ] Enable CI validators (Milestone 3)
+- [ ] Add map-reduce reducer + verifier (Milestone 3A)
 
 ---
 
 *Last updated: 2026-02-23*
-*Version: 2.2*
+*Version: 2.2 (Revised)*
