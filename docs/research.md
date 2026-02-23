@@ -13,7 +13,7 @@ This document builds on existing research and outlines an enhanced multi-agent c
 
 We identify gaps in governance, observability, persistence, and standardisation (e.g., need for guardrails, tracing, shared memory/blackboard, task queue) and propose concrete v2 additions: a clear system model, task lifecycle, message/artefact schemas, blackboard spec, log format, validators, MCP stance, and "swarm modes".
 
-The key insight from Anthropic's research: **multi-agent architecture with lead agent + subagents outperformed single agent by 90.2%**.
+The key insight from Anthropic's research: **multi-agent architecture with lead agent + subagents outperformed single agent by 90.2% (reported on research-style tasks in Anthropic's multi-agent research system write-up; not a general guarantee for all domains)**. ([Source](https://www.anthropic.com/engineering/multi-agent-research-system))
 
 ---
 
@@ -197,8 +197,6 @@ Validation/Testing
 
 **States:** New → Planning → InProgress → Review → Done
 
-**States:** New → Planning → InProgress → Review → Done
-
 ### Message / Artifact Schema
 
 All inter-agent messages and artefacts should follow **typed schemas**:
@@ -340,9 +338,9 @@ The system should be flexible to switch modes per Task (config flag).
 
 ## MCP & External Tools Integration
 
-### MCP Decision: Not Needed for Native Capabilities
+### MCP Decision: Optional (External Tools), Not Required (Native Tools)
 
-**Decision**: MCP is not required when agents already have built-in capabilities.
+**Decision**: For v2.2, MCP is **optional**. It is **not required** for native capabilities (git, file ops, local tooling, built-in browser/search). It becomes valuable when you want a **portable tool bus** for external systems (SaaS APIs, enterprise connectors) across multiple providers/agents.
 
 | Tool | Agent Has It? | Need MCP? |
 |------|---------------|-----------|
@@ -350,11 +348,13 @@ The system should be flexible to switch modes per Task (config flag).
 | File ops | Codex has it ✅ | ❌ No |
 | Browser | OpenClaw browser tool ✅ | ❌ No |
 | Web search | Codex has it ✅ | ❌ No |
+| External SaaS APIs | None ❌ | ✅ Optional |
 
 **When MCP makes sense**:
 - Agent lacks capability (need Brave Search, but no web search)
 - Standardization across multiple agents
 - Custom/third-party APIs not built into any agent
+- Want portable tool bus across providers
 
 ### MCP Security Stance
 

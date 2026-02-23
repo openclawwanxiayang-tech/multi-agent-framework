@@ -1,5 +1,7 @@
 # Multi-Agent Collaboration Framework
 
+> **DEPRECATED**: This document is kept for historical context. Use `docs/architecture-v2.md`, `docs/research.md`, and `docs/tasks.md` as the source of truth.
+
 ## Vision
 An admin agent (me) coordinates multiple specialized sub-agents, each with specific capabilities and access permissions.
 

@@ -10,6 +10,7 @@
 |----------|-------------|
 | [`docs/architecture-v2.md`](./architecture-v2.md) | Full v2.2 architecture spec |
 | [`docs/research.md`](./research.md) | Research findings and rationale |
+| [`docs/decider.md`](./decider.md) | Mode selection rubric (pipeline vs map-reduce vs incident) |
 | [`docs/schemas/`](./schemas/README.md) | JSON schemas for tasks, state, events |
 
 ---
@@ -94,10 +95,12 @@ User → Orchestrator → Workers → Blackboard → Queue → Policy Engine
 | 2.2 | [ ] | Create blackboard.md per task |
 | 2.3 | [ ] | Implement task.json creation |
 | 2.4 | [ ] | Implement state.json transitions |
-| 2.5 | [ ] | Set up task queue (GitHub Issues or DB) |
+| 2.5 | [ ] | MVP task queue: repo-native (`artifacts/tasks/*/state.json`) + file-locking for concurrency |
 | 2.6 | [ ] | Define stage transitions |
+| 2.7 | [ ] | Implement orchestrator runner: create task folder, update state.json, append events.ndjson |
+| 2.8 | [ ] | Implement resume-from-checkpoint: restart a stage using artifact hashes |
 
-**Deliverable**: Working task lifecycle
+**Deliverable**: Working task lifecycle (repo-native). Later: optional GitHub Issues/DB-backed queue once MVP is stable.
 
 ---
 

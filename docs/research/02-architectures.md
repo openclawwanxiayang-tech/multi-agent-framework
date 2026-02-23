@@ -71,7 +71,7 @@ Main Agent
 
 ### Research Finding
 
-> From Anthropic: "Multi-agent architecture with lead agent + subagents outperformed single agent by **90.2%**"
+> See `docs/research.md` for the canonical summary and caveats on reported multi-agent performance improvements (research-task context).
 
 ---
 

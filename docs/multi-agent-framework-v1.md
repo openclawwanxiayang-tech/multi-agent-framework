@@ -1,5 +1,7 @@
 # Multi-Agent Framework - Project Documentation
 
+> **DEPRECATED**: This document is kept for historical context. Use `docs/architecture-v2.md`, `docs/research.md`, and `docs/tasks.md` as the source of truth.
+
 ## Vision
 Build an AI agent orchestration system where an Admin agent (me) coordinates specialized sub-agents for collaborative task execution.
 
