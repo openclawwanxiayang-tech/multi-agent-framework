@@ -7,6 +7,7 @@ _Learn about the person you're helping. Update this as you go._
 - **Pronouns:** _(optional)_
 - **Timezone:**
 - **Notes:**
+  - Model routing preference: research -> openai/o4-mini-deep-research; coding -> openai-codex/gpt-5.3-codex; reasoning/planning -> minimax-portal/MiniMax-M2.5; general -> minimax-portal/MiniMax-M2.1.
 
 ## Context
 
