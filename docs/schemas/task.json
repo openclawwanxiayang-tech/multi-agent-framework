@@ -1,10 +1,16 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$version": "1.0.0",
   "title": "Task",
-  "description": "Task identity and contract",
+  "description": "Task identity and contract - v1.0.0",
   "type": "object",
-  "required": ["task_id", "title", "created_at", "mode", "risk_tier", "definition_of_done"],
+  "required": ["task_id", "title", "created_at", "mode", "risk_tier", "definition_of_done", "$version"],
   "properties": {
+    "$version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Schema version for migration tracking"
+    },
     "task_id": {
       "type": "string",
       "description": "Unique task identifier",
