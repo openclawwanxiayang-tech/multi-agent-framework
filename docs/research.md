@@ -1,261 +1,293 @@
-# Multi-Agent Framework Research
+# Multi-Agent Framework Research v2.2
 
 > Comprehensive analysis of multi-agent orchestration frameworks, architectures, tools, and best practices.
 
 **Last Updated**: 2026-02-23  
-**Research Rounds**: 5 (consolidated from previous disorganized research)
+**Version**: 2.2 (enhanced with community practices, gaps analysis, and roadmap)
 
 ---
 
 ## Executive Summary
 
-This research consolidates findings from extensive analysis of multi-agent orchestration frameworks, architectures, and tools. The key insight from Anthropic's research: **multi-agent architecture with lead agent + subagents outperformed single agent by 90.2%**.
+This document builds on existing research and outlines an enhanced multi-agent collaboration architecture. We review the current repo's design (roles-as-agents, branch-based workflows, SOPs) and survey emerging 2024–2026 practices (OpenClaw's agent teams, ClawSwarm, LangChain's Open Agent Platform, LangGraph, MetaGPT, AutoGen, etc.).
 
-### Recommended Architecture for Our Setup
+We identify gaps in governance, observability, persistence, and standardisation (e.g., need for guardrails, tracing, shared memory/blackboard, task queue) and propose concrete v2 additions: a clear system model, task lifecycle, message/artefact schemas, blackboard spec, log format, validators, MCP stance, and "swarm modes".
 
-```
-User → Admin (Minimax M2.5) → Sequential coordination
-         ↓
-    ┌────┴────┐
-    ↓         ↓
-PM Agent  Codex Agent  (parallel when independent)
-    ↓         ↓
-    └────┬────┘
-         ↓
-    Review (sequential)
-```
+The key insight from Anthropic's research: **multi-agent architecture with lead agent + subagents outperformed single agent by 90.2%**.
 
 ---
 
 ## Table of Contents
 
-1. [Framework Deep Dives](./research/01-frameworks.md) - MetaGPT, CrewAI, ChatDev
-2. [Architecture Patterns](./research/02-architectures.md) - Subagents, Parallel vs Sequential, Handoffs
-3. [Tools & SDKs](./research/03-tools-sdks.md) - AutoGen, LangGraph, OpenAI Agents, AutoGPT
-4. [Best Practices](./research/04-best-practices.md) - Consolidated recommendations
+1. [Existing Documentation Summary](#existing-documentation-summary)
+2. [Recent Community Practices (2024–2026)](#recent-community-practices-20242026)
+3. [Gaps vs Best Practices](#gaps-vs-best-practices)
+4. [Proposed v2 Architecture & Processes](#proposed-v2-architecture--processes)
+5. [Swarm Modes](#swarm-modes)
+6. [Implementation Roadmap](#implementation-roadmap)
+7. [Repos/Tools Comparison](#repostools-comparison)
+8. [Recommended Next Steps](#recommended-next-steps)
+9. [MCP & External Tools Integration](#mcp--external-tools-integration)
+10. [Communication Tools Integration](#communication-tools-integration)
 
 ---
 
-## Research Findings Overview
+## Existing Documentation Summary
 
-### Key Frameworks Analyzed
+The `docs/` folder already describes a **structured SOP-driven workflow**: each role (PM, designer, developer, QA, admin) is defined as an "agent" with its own workspace and responsibilities.
 
-| Framework | Philosophy | Best For | Reference |
-|-----------|------------|----------|-----------|
-| **MetaGPT** | Code = SOP(Team) | Software development | [GitHub](https://github.com/FoundationAgents/MetaGPT) |
-| **CrewAI** | Role-playing agents | Enterprise applications | [GitHub](https://github.com/crewAIInc/crewAI) |
-| **ChatDev** | Virtual Software Company | Scalable systems (1000+ agents) | [GitHub](https://github.com/OpenBMB/ChatDev) |
+**Design Principles:**
+- Modularity
+- Provider-agnosticism
+- Role-based
+- SOP-driven
 
-### Core Architecture Patterns
+**Example Architecture:**
+```
+Admin → parallel PM & Designer → Review → Dev → QA
+```
 
-| Pattern | When to Use | Avoid When |
-|---------|-------------|-------------|
-| **Subagents** | Multiple distinct domains, centralized control | Need independent contexts |
-| **Spawned Agents** | Different providers per agent, resilience | Simple single-domain tasks |
-| **Parallel** | Independent tasks, multi-domain queries | Tasks with dependencies |
-| **Sequential** | Clear dependencies, quality gates | Tasks can run independently |
+**Current Files:**
+- `architecture-v2.md` - Design principles and team structure
+- `tasks.md` - Deliverables and PR-based pipeline
+- `research.md` - Framework surveys (MetaGPT, CrewAI, etc.)
 
-### Tools & SDKs Analyzed
-
-| Tool | Strength | Use Case |
-|------|----------|----------|
-| **AutoGen** | Enterprise, human-in-loop | Complex business applications |
-| **LangGraph** | State persistence, DAG execution | Long-running workflows |
-| **OpenAI Agents SDK** | Simple routing | Production Swarm replacements |
-| **AutoGPT Platform** | Visual workflow, ops | Managed deployments |
+**Current Gap:** The docs capture an **assembly-line approach**: a lead Admin agent delegates to specialist agents, which exchange documents via a version-controlled backlog. They do **not yet specify**:
+- Message schemas
+- Blackboard structure
+- Detailed observability/logging schemes
 
 ---
 
-## Key Principles (From All Research)
+## Recent Community Practices (2024–2026)
 
-### 1. Use Explicit Handoff Contracts
+### OpenClaw Agent Teams
+OpenClaw's latest RFC (Feb 2026) calls for **Agent Teams** – a coordinated multi-agent mode enabling parallel execution with shared state and inter-agent messaging. This contrasts the old "sessions_spawn" (isolated subagents) model and matches our need for sibling communication.
 
-```yaml
-handoff:
-  from: AgentA
-  to: AgentB
-  input:
-    required: [artifact_path, summary]
-  output:
-    expected_format: markdown
-  failure_policy:
-    max_retries: 2
-    escalate_to: admin
-```
+### ClawSwarm
+A lightweight multi-agent system (director + workers) built on Swarms framework. It uses a **hierarchical swarm**: a single director agent receives each task, emits a structured plan (SwarmSpec) to specialist workers, then collates their outputs. Workers have narrow roles (e.g., search, code, summarization) and the director does *not* execute tools itself. ClawSwarm also persists conversation memory with RAG to handle long histories.
 
-### 2. Persist State Between Agents
+### LangChain / LangGraph / Open Agent Platform
+LangChain's ecosystem emphasizes multi-agent orchestration:
+- **Open Agent Platform (OAP)**: No-code UI for building agents with first-class support for Retrieval (LangConnect RAG) and MCP tool integration, plus an "Agent Supervisor" to orchestrate agents together
+- **LangGraph**: Designed for *stateful, hierarchical multi-actor workflows* – supports single-, multi-agent and hierarchical flows in one framework, with built-in long-term memory, "time-travel" state management, and human-in-the-loop controls
 
-- Task state file + checkpointing
-- Never rely on ephemeral chat only
-- Use structured artifact files
+These tools emphasise **observability and durability** (traces, metrics, undo/roll-back, background jobs) and strict typing (memory schema, tool interfaces).
 
-### 3. Bound Autonomy
+### MetaGPT
+An example of SOP-driven agent workflows. MetaGPT encodes Standard Operating Procedures into prompt pipelines, creating an "assembly line" of role-based agents. Each agent has a specialist role (requirements, coding, testing, etc.) and agents verify each other's outputs to reduce errors. The workflow is iterative: agents handle subtasks in parallel and feed results back to lead agents.
 
-| Parameter | Recommended |
-|-----------|-------------|
-| `max_iterations` | 20 |
-| `max_tool_calls` | 50 |
-| `max_retries` | 2 |
-| `timeout` | 300s |
+### AutoGen (Microsoft)
+A popular open-source multi-agent framework (Python) designed for research/collaboration. It allows agents to chat and self-reflect in loops. AutoGen supports agent-to-agent communication patterns and "self-reflection" but lacks built-in enterprise features (no RBAC, audit, etc.).
 
-### 4. Human-in-the-Loop at Key Gates
-
-- After PM spec (feasibility check)
-- Before merge/deploy (quality check)
-- For sensitive operations (API changes)
-
-### 5. Graph Over Ad-hoc Chains
-
-- Model workflow as DAG (including parallel branches)
-- Add explicit rollback/error paths
-- LangGraph-style checkpoint persistence
-
-### 6. Observability First
-
-- Per-agent logs
-- Task IDs and traceability
-- Runtime metrics (latency, retries, failure reasons)
-
-### 7. Role Isolation
-
-- Separate workspace per agent
-- Principle-of-least-privilege tools/access
-- No crossing boundaries without explicit handoff
+### Governance & Safety
+Recent guidance stresses:
+- Built-in guardrails
+- Logging
+- Human oversight
+- Pre-flight checks ("input guardrails")
+- Tracing for observability
+- Centralized policy enforcement
+- Eval-driven metrics loops
+- CitationAgent for sources in research
+- Memory of plans to avoid hallucination
 
 ---
 
-## Recommended Agent Definitions
+## Gaps vs Best Practices
 
-### Admin (Me - Orchestrator)
-
-```yaml
-Role: Project Orchestrator
-Goal: Coordinate sub-agents, review outputs, ensure quality
-Backstory: Experienced tech lead managing a distributed team
-Model: Minimax M2.5
-Tools: sessions_spawn, message, read, write, exec
-Workspace: ~/admin-workspace
-Constraints: Reviews all outputs before proceeding
-```
-
-### PM Agent
-
-```yaml
-Role: Product Manager
-Goal: Create specs, prioritize backlog, define requirements
-Backstory: Experienced PM who bridges business and tech
-Model: Minimax M2.5
-Workspace: ~/pm-workspace
-Tools: File ops, github issues
-```
-
-### Developer Agent
-
-```yaml
-Role: Software Developer
-Goal: Write clean, working code based on specifications
-Backstory: Senior developer who cares about code quality
-Model: OpenAI Codex (gpt-5.3-codex)
-Workspace: ~/codex-workspace
-Tools: File ops, exec, github, browser
-```
-
-### QA Agent
-
-```yaml
-Role: QA Engineer
-Goal: Test implementation, report bugs, ensure quality
-Backstory: Thorough tester with attention to detail
-Model: Minimax M2.5 or Claude
-Workspace: ~/qa-workspace
-Tools: File ops, exec, testing frameworks
-```
+| Gap Area | Current State | Best Practice | Proposed v2 Addition |
+|----------|---------------|---------------|---------------------|
+| **Coordination Patterns** | Spawn-and-return flow | Sibling communication, dynamic task creation | Support parallel workflows, nested agents |
+| **Governance & Security** | "What NOT to do" lists | Formal policy enforcement, RBAC, audit logs | Security policies, pre-flight schemas |
+| **Observability & Logging** | No structured logging | Full observability (trace IDs, event logs) | Trace/event log format |
+| **Durability & Memory** | Local file per workspace | Persistent blackboard/memory | Shared blackboard, task queue |
+| **Task Lifecycle** | Implicit workflow | Formal task queue with state machine | Task queue specification |
+| **Standardisation** | Ad-hoc tools | MCP for tool discovery | MCP stance (stateless tools only) |
+| **Evaluation** | None defined | Eval-driven design | Stage validators, regression tests |
+| **Permissioning** | Not mentioned | Least-privilege, scoped tokens | Agent permission scopes |
 
 ---
 
-## Workflow Implementation
+## Proposed v2 Architecture & Processes
 
-### Standard Operating Procedure (SOP)
+### System Model and Workflow
 
-```
-User Request
-    │
-    ▼
-┌─────────────────┐
-│      PM         │ → Branch: feature/{id}/spec → PR → Review → Merge
-│   SPEC.md       │
-└─────────────────┘
-    │
-    ▼
-┌─────────────────┐
-│   Designer      │ → Branch: feature/{id}/design → PR → Review → Merge
-│   design.md     │
-└─────────────────┘
-    │
-    ▼
-┌─────────────────┐
-│   Developer     │ → Branch: feature/{id}/impl → PR → Review → Merge
-│   Code          │
-└─────────────────┘
-    │
-    ▼
-┌─────────────────┐
-│      QA         │ → Branch: feature/{id}/test → PR → Review → Merge
-│   test-results  │
-└─────────────────┘
-    │
-    ▼
-      Done
+We propose a **flow-based orchestrator** (inspired by CrewAI) with a central *Admin/Orchestrator agent* defining the task flow.
+
+```mermaid
+graph LR
+    U[User Request] --> A((Admin/Coordinator))
+    A --> P[PM Agent: Requirement Analysis]
+    A --> D[Designer Agent: UI/UX Plan]
+    P --> M{Merge Docs}
+    D --> M
+    M --> E[Developer Agent: Implement Features]
+    E --> R[Reviewer Agent: Code Review]
+    R --> Q[QA Agent: Testing]
+    Q --> C((Completed Deliverable))
 ```
 
-### Per-Task Artifacts
+**Roles:**
+- **Admin/Coordinator**: Parses user input, creates Task object, orchestrates phases, sets guardrails
+- **PM & Designer (Parallel)**: In phase 1, both analyze requirements; outputs merge into common workspace
+- **Developer**: Writes code/artifacts based on merged outputs
+- **Reviewer**: Conducts peer-review of dev output
+- **QA**: Runs tests and final approval
 
+### Task Lifecycle (Pipeline)
+
+```mermaid
+flowchart LR
+    NewTask(New Request) --> Plan[Analysis/Planning]
+    Plan --> {Parallel?}
+    {Parallel?} -->|Yes| DesignPhase[Parallel Execution: PM, Designer]
+    {Parallel?} -->|No| SeqPhase[Sequential Execution]
+    DesignPhase --> Merge[Merge Outputs]
+    SeqPhase --> Merge
+    Merge --> DevExecution[Development & Tools]
+    DevExecution --> Verify[Validation / Testing]
+    Verify --> Complete[Completion]
 ```
-artifacts/tasks/{task-id}/
-├── brief.md           # Original request
-├── 01-spec.md         # PM output
-├── 02-design.md       # Designer output
-├── 03-implementation/ # Dev output
-├── 04-testing.md      # QA output
-└── state.json         # Task state
+
+**States:** New → Planning → InProgress → Review → Done
+
+### Message / Artifact Schema
+
+All inter-agent messages and artefacts should follow **typed schemas**:
+
+```json
+{
+  "task_id": "T1234",
+  "stage": "spec",
+  "sender": "PM-Agent",
+  "payload": {
+    "spec_title": "Feature X Requirements",
+    "sections": [
+      {"heading": "Overview", "content": "..."},
+      {"heading": "Acceptance Criteria", "content": "..."}
+    ]
+  },
+  "metadata": {"timestamp": "...", "version": 1}
+}
 ```
+
+All agents validate incoming envelopes against JSON schemas (e.g., using Pydantic).
+
+### Shared Blackboard & Task Queue
+
+We introduce a **blackboard** (GitHub repository or database) where agents post and retrieve artifacts and context.
+
+**Blackboard Fields:**
+- `task_id`
+- `phase`
+- `document_refs`
+- `agent_outputs`
+
+**Task Queue Fields:**
+- `task_id`
+- `status`
+- `assigned_agents[]`
+- `dependencies[]`
+- `history[]`
+
+**State Transitions:** New → Planning → InProgress → Review → Done
+
+### Trace/Event Log Format
+
+All agent actions must be logged in an append-only **trace log**:
+
+```json
+{
+  "timestamp": "2026-02-23T18:34:00Z",
+  "task_id": "T1234",
+  "agent": "Dev-Agent",
+  "action": "tool_call",
+  "tool": "run_tests",
+  "input": {"files": 2},
+  "output": {"passed": 10, "failed": 0},
+  "result": "success"
+}
+```
+
+This log can be ingested by observability tools (Elastic, LangSmith) for replay/debugging.
+
+### Stage Validators
+
+| Stage | Validator | Checks |
+|-------|-----------|--------|
+| **Spec** | spec_validator.py | Required sections, no empty fields |
+| **Design** | design_validator.py | Completeness, wireframes included |
+| **Code** | code_linter.py | Style, security, tests |
+| **QA** | compliance_checker.py | Forbidden content, security issues |
 
 ---
 
-## Directory Structure
+## Swarm Modes
 
-```
-multi-agent-framework/
-├── config/
-│   ├── providers.yaml     # LLM provider configs
-│   ├── roles.yaml         # Role definitions
-│   ├── tasks.yaml         # Task templates
-│   └── workflow.yaml      # SOP workflow
-│
-├── workspaces/
-│   ├── admin-workspace/
-│   ├── pm-workspace/
-│   ├── designer-workspace/
-│   ├── dev-*-workspace/
-│   └── qa-workspace/
-│
-├── artifacts/
-│   └── tasks/
-│       └── {task-id}/
-│
-├── docs/
-│   ├── research/
-│   │   ├── 01-frameworks.md
-│   │   ├── 02-architectures.md
-│   │   ├── 03-tools-sdks.md
-│   │   └── 04-best-practices.md
-│   ├── architecture-v2.md
-│   └── tasks.md
-│
-└── skills/
-    ├── agent-team-orchestration/
-    └── brainstorming/
-```
+We should support multiple modes of collaboration:
+
+| Mode | Description | Use Case |
+|------|-------------|----------|
+| **Manager-Orchestrator** | One lead agent issues tasks | Our default (Admin → sub-agents) |
+| **Decentralized** | Agents call each other peer-to-peer | Brainstorming |
+| **Pipeline** | Linear handoff | No parallelism needed |
+| **Parallel Team** | Lead spawns many sub-agents in parallel | Research, multi-domain queries |
+
+The system should be flexible to switch modes per Task (config flag).
+
+---
+
+## Implementation Roadmap
+
+| Milestone | Effort | Description |
+|-----------|--------|-------------|
+| **1. Schema & Logging** | Low | Define JSON schemas, trace log format, basic guardrails |
+| **2. Blackboard & Queue** | Medium | Set up shared workspace, implement Task Queue |
+| **3. Validators & Evals** | Medium | Write validation scripts, integrate into CI |
+| **4. Observability & Governance** | High | Logging/tracing system, RBAC, policy engine |
+| **5. MCP Integration** | High | Deploy MCP server with curated tools (if needed) |
+| **6. Documentation** | Low | Update docs with new model, diagrams |
+
+**Effort Estimates:**
+- Low ≈ 1–2 engineers × 1 month
+- Medium ≈ 2–3 engineers × 2–3 months
+- High ≈ 3+ engineers × 3–6 months
+
+---
+
+## Repos/Tools Comparison
+
+| Repository/Tool | Purpose | Maturity | License | Relevance |
+|-----------------|---------|----------|---------|-----------|
+| **openclaw/openclaw** | Multi-agent assistant | Production | Apache-2.0 | Base orchestrator |
+| **The-Swarm-Corporation/ClawSwarm** | Hierarchical multi-agent bot | Prototype | Apache-2.0 | Lightweight alternative |
+| **LangChain/langchain** | LLM agent framework | Production | MIT | Industry-standard |
+| **langchain-ai/langgraph** | Graph-based orchestration | Beta | MIT | Stateful workflows |
+| **langchain-ai/open-agent-platform** | No-code + supervisor | Alpha | MIT | Agent-supervisor pattern |
+| **FoundationAgents/MetaGPT** | SOP-driven framework | Research | MIT | Assembly-line roles |
+| **microsoft/autogen** | Multi-agent orchestration | Active | MIT | Agent loops |
+| **modelcontextprotocol** | Protocol for tools | Emerging | Apache-2.0 | Tool standard |
+| **fastmcp/fastmcp** | MCP server framework | Emerging | MIT | Host MCP tools |
+
+---
+
+## Recommended Next Steps
+
+1. **PR: Define Blackboard & Task-Queue**
+   - Create `blackboard.md` describing shared workspace model
+   - Add JSON schema for Task and envelopes
+   - Implement Task Queue service
+
+2. **PR: Add Logging & Traceability**
+   - Introduce trace logger and event JSON schema
+   - Update each agent to log actions
+   - Demonstrate trace for completed task
+
+3. **PR: Validator Scripts and SOP Update**
+   - Add validator tools (spec_validator.py, code_linter.py)
+   - Include in CI (GitHub Actions)
+   - Update SOP docs to reference checks
 
 ---
 
@@ -277,11 +309,22 @@ multi-agent-framework/
 - Standardization across multiple agents
 - Custom/third-party APIs not built into any agent
 
-### Communication Tools Integration
+### MCP Security Stance
+
+If adopting MCP:
+- Host tools on trusted MCP server
+- Ensure **tool permissioning**: scoped tokens, network restrictions
+- **Stateful tools** (databases, vector stores) remain "native"
+- Enforce **cryptographic authenticity**: sign tool metadata
+- Maintain **security review checklist** for each new tool
+
+---
+
+## Communication Tools Integration
 
 **Decision**: Agents need separate accounts for Discord/Telegram/Feishu to communicate directly.
 
-#### Why Separate Accounts?
+### Why Separate Accounts?
 
 | Benefit | Example |
 |---------|---------|
@@ -290,9 +333,9 @@ multi-agent-framework/
 | **Targeted routing** | Messages to specific agents |
 | **Independent presence** | Agents online/away status |
 
-#### Architecture Options
+### Architecture Options
 
-**Option A: Hub-and-Spoke (Recommended for Start)**
+**Option A: Hub-and-Spoke (Recommended)**
 ```
 OpenClaw (me) monitors Discord
     │
@@ -307,7 +350,7 @@ OpenClaw (me) monitors Discord
 @dev-agent (dedicated bot) → Own Discord account → Always online
 ```
 
-#### Tools to Integrate
+### Tools to Integrate
 
 | Tool | Use Case | Status |
 |------|----------|--------|
@@ -316,7 +359,7 @@ OpenClaw (me) monitors Discord
 | **Feishu** | China workspace | Have skills |
 | **Jira** | Task tracking | To evaluate |
 
-#### Required Automation
+### Required Automation
 
 | Automation | Purpose |
 |------------|---------|
@@ -334,8 +377,13 @@ OpenClaw (me) monitors Discord
 - [ ] Configure sub-agent workspaces
 - [ ] Test sessions_spawn with role definitions
 - [ ] Implement SOP workflow with artifact templates
+- [ ] Define message/artifact JSON schemas
+- [ ] Set up shared blackboard (tasks/ repo or DB)
+- [ ] Implement Task Queue service
+- [ ] Define trace/event log format
+- [ ] Add stage validators (spec, design, code, QA)
+- [ ] Set up observability logging
 - [ ] Set up Git branch protection rules
-- [ ] Add observability logging
 - [ ] Test Discord agent communication (hub-and-spoke)
 - [ ] Evaluate Feishu integration for China workflow
 - [ ] Consider Jira for task management
@@ -353,6 +401,7 @@ OpenClaw (me) monitors Discord
 - AutoGen: https://github.com/microsoft/autogen
 - LangGraph: https://github.com/langchain-ai/langgraph
 - OpenAI Agents SDK: https://openai.github.io/openai-agents-python/
+- ClawSwarm: https://github.com/The-Swarm-Corporation/ClawSwarm
 
 ### Documentation
 - CrewAI Agents: https://docs.crewai.com/concepts/agents
