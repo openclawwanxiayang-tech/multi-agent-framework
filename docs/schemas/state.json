@@ -1,10 +1,16 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$version": "1.0.0",
   "title": "TaskState",
-  "description": "Durable execution state machine",
+  "description": "Durable execution state machine - v1.0.0",
   "type": "object",
-  "required": ["task_id", "stage", "status", "assigned"],
+  "required": ["$version", "task_id", "stage", "status", "assigned"],
   "properties": {
+    "$version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Schema version for migration tracking"
+    },
     "task_id": {
       "type": "string",
       "description": "Reference to task"
@@ -16,7 +22,16 @@
     },
     "status": {
       "type": "string",
-      "enum": ["PENDING", "IN_PROGRESS", "BLOCKED", "WAITING_APPROVAL", "COMPLETED", "FAILED"],
+      "enum": [
+        "PENDING",
+        "IN_PROGRESS",
+        "BLOCKED",
+        "BLOCKED_APPROVAL",
+        "NEEDS_RECONCILE",
+        "WAITING_APPROVAL",
+        "COMPLETED",
+        "FAILED"
+      ],
       "description": "Stage status"
     },
     "assigned": {
@@ -42,7 +57,8 @@
         "properties": {
           "stage": {"type": "string"},
           "artifact": {"type": "string"},
-          "hash": {"type": "string"}
+          "hash": {"type": "string"},
+          "completed_at": {"type": "string", "format": "date-time"}
         }
       }
     },
@@ -65,6 +81,17 @@
           "message": {"type": "string"},
           "timestamp": {"type": "string", "format": "date-time"}
         }
+      }
+    },
+    "lock": {
+      "type": "object",
+      "description": "Current lock holder (if any)",
+      "properties": {
+        "owner_id": {"type": "string", "description": "Agent/orchestrator ID"},
+        "host_id": {"type": "string", "description": "Host machine identifier"},
+        "pid": {"type": "integer", "description": "Process ID"},
+        "acquired_at": {"type": "string", "format": "date-time"},
+        "heartbeat_ts": {"type": "string", "format": "date-time"}
       }
     }
   }

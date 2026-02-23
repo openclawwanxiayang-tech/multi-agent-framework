@@ -10,6 +10,7 @@ JSON schemas for the Multi-Agent Framework v2.2.
 |--------|------|---------|
 | **Task** | `task.json` | Task identity and contract |
 | **TaskState** | `state.json` | Durable execution state machine |
+| **Lock** | `lock.json` | Task lock for concurrency control |
 | **Envelope** | `envelope.json` | Structured handoff between agents |
 | **Event** | `event.json` | Append-only event log entry |
 

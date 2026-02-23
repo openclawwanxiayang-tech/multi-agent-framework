@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$version": "1.0.0",
+  "title": "Lock",
+  "description": "Task lock file - v1.0.0",
+  "type": "object",
+  "required": ["$version", "owner_id", "host_id", "pid", "acquired_at", "heartbeat_ts", "ttl_seconds"],
+  "properties": {
+    "$version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Schema version"
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "Agent/orchestrator ID holding the lock"
+    },
+    "host_id": {
+      "type": "string",
+      "description": "Host machine identifier"
+    },
+    "pid": {
+      "type": "integer",
+      "description": "Process ID"
+    },
+    "acquired_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When lock was acquired"
+    },
+    "heartbeat_ts": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last heartbeat timestamp"
+    },
+    "ttl_seconds": {
+      "type": "integer",
+      "default": 300,
+      "description": "Time-to-live in seconds"
+    }
+  }
+}
