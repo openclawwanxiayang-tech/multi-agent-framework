@@ -1,35 +1,62 @@
-# Multi-Agent Framework - Task List
+# Multi-Agent Framework - Task List v2.2
 
-## Design Principles
-
-| Principle | Description |
-|-----------|-------------|
-| **Modular** | Each component is independent, loosely coupled |
-| **Provider-agnostic** | Abstract LLM layer, easy to switch providers |
-| **Role-based** | Adding roles = adding config, not code |
-| **SOP-driven** | Follow MetaGPT's Software Company workflow |
+> Aligned with architecture-v2.2 and research.md v2.2
 
 ---
 
-## Architecture: See `docs/architecture-v2.md`
+## Architecture Reference
+
+| Document | Description |
+|----------|-------------|
+| [`docs/architecture-v2.md`](./architecture-v2.md) | Full v2.2 architecture spec |
+| [`docs/research.md`](./research.md) | Research findings and rationale |
+| [`docs/schemas/`](./schemas/README.md) | JSON schemas for tasks, state, events |
 
 ---
 
-## Team (MetaGPT-inspired)
+## v2.2 System Overview
 
-| Role | Purpose | Workspace |
-|------|---------|-----------|
-| **PM** | Requirements → Spec | ~/pm-workspace |
-| **UI/UX Designer** | Spec → Design | ~/designer-workspace |
-| **Developers** (N) | Implementation | ~/dev-*-workspace |
-| **QA** | Testing → Quality | ~/qa-workspace |
-| **Admin** | Coordination + Quality Gates | ~/workspace |
+```
+User → Orchestrator → Workers → Blackboard → Queue → Policy Engine
+```
+
+---
+
+## Team Roles
+
+| Role | Purpose | Tools | Workspace |
+|------|---------|-------|-----------|
+| **Orchestrator** (Admin) | Coordination, gates, merging | All | admin-workspace |
+| **PM** | Requirements → Spec | Docs, GitHub Issues | pm-workspace |
+| **Designer** | Spec → Design | Docs, Figma API | designer-workspace |
+| **Dev** | Implementation | Git, Tests, Browser | dev-workspace |
+| **QA** | Testing → Quality | Tests, Security | qa-workspace |
+| **Release** | Deployment | CI/CD | release-workspace |
+
+---
+
+## Collaboration Modes
+
+| Mode | When to Use |
+|------|-------------|
+| **Pipeline** (default) | PM → Design → Dev → QA → Release |
+| **Map-Reduce** | Parallel workers → merge → verify |
+| **Incident** | Triage → minimal tools → human approval |
+
+---
+
+## Risk Tiers
+
+| Tier | What | Approval |
+|------|------|----------|
+| **Low** | Read-only, docs, research | Auto |
+| **Medium** | Code + tests + PRs | Auto |
+| **High** | Dep upgrades, infra, deploy | Human |
+| **Critical** | Production incidents, secrets | Multi-approval |
 
 ---
 
 ## GitHub Workflow (Per Deliverable)
-
-Every deliverable follows PR workflow:
 
 | Stage | Branch | Action |
 |-------|--------|--------|
@@ -42,85 +69,195 @@ Every deliverable follows PR workflow:
 
 ---
 
-## Agent-Friendly Repository
+## Implementation Roadmap
 
-Created:
-- `AGENTS.md` - Main agent guide (Anthropic best practices)
-- `.github/agents/pm-agent.md` - PM agent definition
-- `.github/agents/dev-agent.md` - Developer agent definition
-- `.github/agents/qa-agent.md` - QA agent definition
+### Milestone 1: Schema & Logging Foundations
+
+| Task | Status | Description |
+|------|--------|-------------|
+| 1.1 | [ ] | Finalize task.json schema |
+| 1.2 | [ ] | Finalize state.json schema |
+| 1.3 | [ ] | Finalize envelope.json schema |
+| 1.4 | [ ] | Define event log format (NDJSON) |
+| 1.5 | [ ] | Implement trace_id generation |
+| 1.6 | [ ] | Add basic guardrail checks |
+
+**Deliverable**: JSON schemas in `docs/schemas/`
+
+---
+
+### Milestone 2: Blackboard & Queue
+
+| Task | Status | Description |
+|------|--------|-------------|
+| 2.1 | [ ] | Define directory structure for artifacts |
+| 2.2 | [ ] | Create blackboard.md per task |
+| 2.3 | [ ] | Implement task.json creation |
+| 2.4 | [ ] | Implement state.json transitions |
+| 2.5 | [ ] | Set up task queue (GitHub Issues or DB) |
+| 2.6 | [ ] | Define stage transitions |
+
+**Deliverable**: Working task lifecycle
+
+---
+
+### Milestone 3: Stage Validators
+
+| Task | Status | Description |
+|------|--------|-------------|
+| 3.1 | [ ] | spec_validator.py - validate SPEC.md |
+| 3.2 | [ ] | design_validator.py - validate design.md |
+| 3.3 | [ ] | code_linter.py - validate code |
+| 3.4 | [ ] | qa_checker.py - validate test results |
+| 3.5 | [ ] | Integrate validators into CI |
+| 3.6 | [ ] | Add regression test harness |
+
+**Deliverable**: Automated validation at each stage
+
+---
+
+### Milestone 4: Observability & Governance
+
+| Task | Status | Description |
+|------|--------|-------------|
+| 4.1 | [ ] | Set up NDJSON event logger |
+| 4.2 | [ ] | Add trace_id to all agent actions |
+| 4.3 | [ ] | Implement run summary generation |
+| 4.4 | [ ] | Policy engine v1: role permissions |
+| 4.5 | [ ] | Risk tier gates implementation |
+| 4.6 | [ ] | (Optional) Export to LangSmith/ELK |
+
+**Deliverable**: Full observability + basic policy enforcement
+
+---
+
+### Milestone 5: MCP Integration (Optional)
+
+| Task | Status | Description |
+|------|--------|-------------|
+| 5.1 | [ ] | Evaluate MCP server options |
+| 5.2 | [ ] | Deploy FastMCP with curated tools |
+| 5.3 | [ ] | Add MCP auth (scoped tokens) |
+| 5.4 | [ ] | Add MCP to tool permission matrix |
+| 5.5 | [ ] | Audit tool call security |
+
+**Deliverable**: MCP gateway for external tools
+
+---
+
+### Milestone 6: Agent Accounts (Discord/Telegram/Feishu)
+
+| Task | Status | Description |
+|------|--------|-------------|
+| 6.1 | [ ] | Hub-and-spoke: monitor mentions |
+| 6.2 | [ ] | Spawn sub-agents on mention |
+| 6.3 | [ ] | Route responses back to channel |
+| 6.4 | [ ] | (Future) Separate bot accounts |
+| 6.5 | [ ] | Feishu integration |
+| 6.6 | [ ] | Jira integration |
+
+**Deliverable**: Agents respond in chat platforms
+
+---
+
+## Directory Structure (Target)
+
+```
+multi-agent-framework/
+├── config/
+│   ├── providers.yaml
+│   ├── roles.yaml
+│   ├── tasks.yaml
+│   ├── workflow.yaml
+│   └── policy.yaml          # NEW: Risk tiers, permissions
+│
+├── workspaces/
+│   ├── admin-workspace/
+│   ├── pm-workspace/
+│   ├── designer-workspace/
+│   ├── dev-workspace/
+│   ├── qa-workspace/
+│   └── release-workspace/   # NEW
+│
+├── artifacts/
+│   └── tasks/
+│       └── {task-id}/
+│           ├── task.json
+│           ├── state.json
+│           ├── blackboard.md
+│           ├── decisions.md
+│           ├── artifacts/
+│           │   ├── spec/
+│           │   ├── design/
+│           │   ├── impl/
+│           │   ├── qa/
+│           │   └── release/
+│           └── logs/
+│               ├── events.ndjson
+│               └── summary.md
+│
+├── schemas/                 # DONE
+│   ├── task.json
+│   ├── state.json
+│   ├── envelope.json
+│   └── event.json
+│
+├── validators/
+│   ├── spec_validator.py    # TODO
+│   ├── design_validator.py  # TODO
+│   ├── code_linter.py       # TODO
+│   └── qa_checker.py       # TODO
+│
+├── skills/
+│   ├── agent-team-orchestration/
+│   └── brainstorming/
+│
+└── logs/
+```
+
+---
+
+## Agent Profiles
+
+Each agent defined in `.github/agents/`:
+
+| Agent | File | Status |
+|-------|------|--------|
+| PM | pm-agent.md | ✅ Existing |
+| Dev | dev-agent.md | ✅ Existing |
+| QA | qa-agent.md | ✅ Existing |
+| Designer | designer-agent.md | [ ] To create |
+| Release | release-agent.md | [ ] To create |
 
 Each agent has:
-- Clear role and responsibilities
+- Role and responsibilities
+- Tool permissions (per risk tier)
 - Workspace boundaries
 - Commands they can run
-- Git workflow they must follow
 - What to NEVER do
 
 ---
 
-## Phase 1: Infrastructure & Config
+## Quick Start Checklist
 
-### 1.1 Workspaces (DONE ✅)
-- [x] ~/codex-workspace
-- [x] ~/pm-workspace
-- [ ] ~/designer-workspace
-- [ ] ~/dev-frontend-workspace
-- [ ] ~/dev-backend-workspace
-- [ ] ~/qa-workspace
-
-### 1.2 Configuration System
-- [ ] Create `config/` directory
-- [ ] `config/providers.yaml` - LLM providers
-- [ ] `config/roles.yaml` - Full team roles
-- [ ] `config/workflow.yaml` - SOP definition
-- [ ] `artifacts/` - Shared outputs
-- [ ] `logs/` - Execution logs
+- [ ] Review architecture-v2.md
+- [ ] Review schemas in docs/schemas/
+- [ ] Set up workspaces (or use existing)
+- [ ] Create first task with task.json
+- [ ] Run through pipeline mode
+- [ ] Test validators at each stage
 
 ---
 
-## Phase 2: Core Framework
+## Related Documents
 
-- [ ] Provider abstraction layer
-- [ ] Role registry system
-- [ ] Task lifecycle manager
-- [ ] Handoff protocols
-
----
-
-## Phase 3: PM + Designer (SOP Part 1)
-
-- [ ] PM role implementation
-- [ ] Designer role implementation
-- [ ] Test: requirement → spec → design
+| Document | Description |
+|----------|-------------|
+| [`AGENTS.md`](./AGENTS.md) | Agent-friendly repository guide |
+| [`.github/agents/`](.github/agents/) | Agent profile definitions |
+| [`docs/research.md`](./research.md) | Full research and rationale |
 
 ---
 
-## Phase 4: Developers (SOP Part 2)
-
-- [ ] Dev role(s) implementation
-- [ ] Frontend specialist
-- [ ] Backend specialist
-- [ ] Test: design → implementation
-
----
-
-## Phase 5: QA (SOP Part 3)
-
-- [ ] QA role implementation
-- [ ] Testing workflow
-- [ ] Full SOP integration
-
----
-
-## Phase 6: Robustness
-
-- [ ] Error handling
-- [ ] Fallbacks (provider switching)
-- [ ] Observability
-
----
-
-*Status: Phase 1.2 - Config System*
-
-*Provider-agnostic team: PM (Minimax), Designer (Anthropic), Devs (OpenAI), QA (Anthropic)*
+*Last updated: 2026-02-23*
+*Version: 2.2*
