@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TaskState",
+  "description": "Durable execution state machine",
+  "type": "object",
+  "required": ["task_id", "stage", "status", "assigned"],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Reference to task"
+    },
+    "stage": {
+      "type": "string",
+      "enum": ["SPEC", "DESIGN", "MERGE_SPEC_DESIGN", "IMPLEMENT", "REVIEW", "QA", "RELEASE", "DONE"],
+      "description": "Current workflow stage"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PENDING", "IN_PROGRESS", "BLOCKED", "WAITING_APPROVAL", "COMPLETED", "FAILED"],
+      "description": "Stage status"
+    },
+    "assigned": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["role", "agent_id"],
+        "properties": {
+          "role": {"type": "string"},
+          "agent_id": {"type": "string"}
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Blocked by these task IDs"
+    },
+    "checkpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "stage": {"type": "string"},
+          "artifact": {"type": "string"},
+          "hash": {"type": "string"}
+        }
+      }
+    },
+    "retries": {
+      "type": "object",
+      "additionalProperties": {"type": "integer"},
+      "description": "Retry count per stage"
+    },
+    "next": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Possible next stages"
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "stage": {"type": "string"},
+          "message": {"type": "string"},
+          "timestamp": {"type": "string", "format": "date-time"}
+        }
+      }
+    }
+  }
+}

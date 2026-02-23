@@ -1,371 +1,317 @@
-# Multi-Agent Framework Architecture v2.1
+# Multi-Agent Collaboration Architecture v2.2
 
-## Design Principles
+> OpenClaw-Orchestrated Swarm Architecture
 
-| Principle | Description |
-|-----------|-------------|
-| **Modular** | Each component is independent, loosely coupled |
-| **Provider-agnostic** | Abstract LLM layer, easy to switch providers |
-| **Role-based** | Adding roles = adding config, not code |
-| **Robust** | Error handling, fallbacks, observability |
-| **SOP-driven** | Follow MetaGPT's Software Company workflow |
+**Last Updated**: 2026-02-23
 
 ---
 
-## Team Structure (MetaGPT-inspired)
+## 1. Goals and Non-Goals
+
+### Goals
+
+| Goal | Description |
+|------|-------------|
+| **SOP-driven** | Standard Operating Procedures for agent collaboration |
+| **Auditable** | Full trace of decisions and actions |
+| **Replayable** | Checkpoints enable retry/resume |
+| **Safe** | Risk tiers, approvals, policy enforcement |
+| **Multi-provider** | Support OpenAI/Claude/Minimax without rewriting tool glue |
+| **Future-proof** | Clean path to OpenClaw Agent Teams |
+
+### Non-Goals (for v2.2)
+
+| Non-Goal | Reason |
+|----------|--------|
+| Real-time peer chat between sibling agents | Will emulate with blackboard + queue until Agent Teams lands |
+| Fully autonomous production changes without gates | Always require human approval for risky actions |
+
+---
+
+## 2. High-Level System Model
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     Product Manager (PM)                         │
-│                  Requirement Analysis & Spec                     │
-│                  Workspace: ~/pm-workspace                      │
+│                      Orchestrator (Admin/Director)              │
+│  • Owns workflow graph / state machine                          │
+│  • Creates/assigns subtasks                                     │
+│  • Enforces policy gates (risk tiers, approvals)               │
+│  • Merges outputs + final delivery                              │
+│  • Minimal tool execution (routing + verification > heavy use)  │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    UI/UX Designer                               │
-│              User Interface & Experience Design                │
-│              Workspace: ~/designer-workspace                   │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌───────────────────┐ ┌───────────────────┐ ┌───────────────────┐
-│   Developer 1     │ │   Developer 2     │ │   Developer N     │
-│   (Frontend)      │ │   (Backend)       │ │   (Specialist)    │
-│   Provider: X    │ │   Provider: Y    │ │   Provider: Z    │
-└───────────────────┘ └───────────────────┘ └───────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                        QA Engineer                              │
-│                  Testing & Quality Assurance                    │
-│                  Workspace: ~/qa-workspace                      │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-                    ┌───────────────┐
-                    │     Admin     │
-                    │  (Coordinator)│
-                    └───────────────┘
-```
-
----
-
-## Standard Operating Procedure (SOP)
-
-```
-User Request
-    │
-    ▼
-┌─────────────────┐
-│      PM        │  ← Input: User requirement
-│  Requirement    │
-│  Analysis       │
-│  + Spec         │
-└─────────────────┘
-    │ Output: SPEC.md (requirements, user stories)
-    ▼
-┌─────────────────┐
-│   UI/UX        │  ← Input: SPEC.md
-│   Designer     │
-│  Architecture  │
-│  + UI Design   │
-└─────────────────┘
-    │ Output: design.md (UI mockups, component specs)
-    ▼
-┌─────────────────┐
-│   Developers   │  ← Input: SPEC.md + design.md
-│   Implement    │
-│   Features    │
-└─────────────────┘
-    │ Output: code/ (implemented features)
-    ▼
-┌─────────────────┐
-│      QA        │  ← Input: code/ + SPEC.md
-│   Testing      │
-│   & Review     │
-└─────────────────┘
-    │ Output: test results + bug reports
-    ▼
-    Done / Return to PM for revision
-```
-
----
-
-## Provider Flexibility
-
-Each role can use different providers - mix and match:
-
-```yaml
-roles:
-  pm:
-    provider: minimax
-    model: MiniMax-M2.5
-    workspace: ~/pm-workspace
-    
-  designer:
-    provider: anthropic
-    model: claude-sonnet-4-20250514
-    workspace: ~/designer-workspace
-    
-  dev_frontend:
-    provider: openai
-    model: gpt-5.3-codex
-    workspace: ~/dev-frontend-workspace
-    
-  dev_backend:
-    provider: openai
-    model: gpt-5.3-codex
-    workspace: ~/dev-backend-workspace
-    
-  qa:
-    provider: anthropic
-    model: claude-3-5-sonnet
-    workspace: ~/qa-workspace
-```
-
----
-
-## Role Definitions
-
-### 1. Product Manager (PM)
-- **Responsibility**: Requirement analysis, spec writing, prioritization
-- **Input**: User raw requirement
-- **Output**: SPEC.md (detailed requirements, user stories)
-- **Skills**: brainstorming, requirement analysis
-
-### 2. UI/UX Designer
-- **Responsibility**: Interface design, user experience
-- **Input**: SPEC.md
-- **Output**: design.md (component specs, layout, UX flows)
-- **Skills**: UI design knowledge
-
-### 3. Developers (Multiple)
-- **Responsibility**: Implementation
-- **Input**: SPEC.md + design.md
-- **Output**: Working code
-- **Types**: Frontend, Backend, Full-stack, Specialist
-- **Skills**: coding-agent, language-specific
-
-### 4. QA Engineer
-- **Responsibility**: Testing, quality assurance
-- **Input**: Implemented code + SPEC.md
-- **Output**: Test results, bug reports
-- **Skills**: testing frameworks
-
-### 5. Admin (Orchestrator)
-- **Responsibility**: Coordinate SOP, route tasks, quality gates
-- **Input**: Task from user
-- **Output**: Final result to user
-- **Skills**: agent-team-orchestration
-
----
-
-## Task Lifecycle
-
-```
-Inbox → Assigned → In Progress → Review → Done | Failed
-         │           │            │        │
-         ▼           ▼            ▼        ▼
-      Task is    Worker is    Worker   Quality
-      received   working on   finishes check
-                 task         task
-```
-
----
-
-## GitHub Workflow (Per Deliverable)
-
-Every project/task follows proper PR workflow:
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Project Setup                             │
-│                    Create Repo (if new)                          │
+│                    Worker Agents (Specialists)                  │
+│  • PM, Designer, Dev, QA, Security, Researcher, Release         │
+│  • Narrow tool scopes and budgets                              │
+│  • Produce artifacts in standard format                        │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    PM: Requirement Spec                         │
-│                    Branch: feature/{task}/spec                  │
-│                    File: SPEC.md                                │
-│                    → Open PR → Review → Merge                   │
+│                    Blackboard (Shared Workspace)                │
+│  • "Team memory": artifacts + decisions + summaries           │
+│  • Single source of truth for a task                          │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                 Designer: UI/UX Design                          │
-│                 Branch: feature/{task}/design                   │
-│                 File: design.md                                 │
-│                 → Open PR → Review → Merge                      │
+│                    Task Queue / State Machine                  │
+│  • Tracks status, dependencies, assignments, retries          │
+│  • Makes system durable and resumable                         │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Developer: Implementation                    │
-│                    Branch: feature/{task}/impl                  │
-│                    Files: code/, tests/                         │
-│                    → Open PR → Review → Merge                   │
+│                      Policy Engine                              │
+│  • "Who can do what" + risk-tier gates                        │
+│  • Preflight + postflight validation hooks                     │
 └─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      QA: Testing                                │
-│                    Branch: feature/{task}/test                 │
-│                    File: test-results.md                       │
-│                    → Open PR → Review → Merge                  │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-                         Master/Main
 ```
 
 ---
 
-## PR Review Protocol
+## 3. Collaboration Modes
 
-| Stage | Reviewer | Purpose |
-|-------|----------|---------|
-| Spec | Admin | Feasibility, completeness |
-| Design | Admin + PM | UX, usability |
-| Implementation | Admin + QA | Code quality, tests |
-| Test | Admin + Dev | Coverage, correctness |
+### Mode A — Pipeline SOP (Default)
 
-**Each PR must:**
-- Pass automated checks
-- Have at least 1 approval
-- Pass review before merge
-
----
-
-## GitHub Integration Config
-
-```yaml
-github:
-  organization: openclawwanxiayang-tech
-  
-  repos:
-    # Auto-created per project
-    pattern: "maf-{project-name}"
-    
-  branches:
-    main: main
-    feature: "feature/{task-id}/{type}"
-    bugfix: "bugfix/{task-id}/{type}"
-    
-  review:
-    required_approvals: 1
-    auto_merge: false
-    auto_delete_branch: true
+```
+PM → Design → Dev → QA → Release
 ```
 
+**Best for**: Product work where quality matters.
+
+### Mode B — Map-Reduce Swarm
+
+```
+Director
+   │
+   ├──→ Worker 1 (research)
+   ├──→ Worker 2 (code spike)
+   ├──→ Worker 3 (tests)
+   └──→ Worker N ...
+         │
+         ▼
+    Director merges outputs
+         │
+         ▼
+    Verifier confirms
+```
+
+**Best for**: Exploration, research, large refactors.
+
+### Mode C — Incident Mode
+
+```
+Triage → Minimal tool permissions → Mandatory human approval
+```
+
+**Best for**: Production incidents / risky actions.
+
 ---
 
-## Task → PR Mapping
+## 4. Core Components
 
-| Task Stage | Branch | PR Title | Files |
-|------------|--------|----------|-------|
-| Spec | `feature/{id}/spec` | "[Spec] {task name}" | SPEC.md |
-| Design | `feature/{id}/design` | "[Design] {task name}" | design.md |
-| Implementation | `feature/{id}/impl` | "[Impl] {task name}" | code/, tests/ |
-| Test | `feature/{id}/test` | "[Test] {task name}" | test-results.md |
+### 4.1 Orchestrator (Admin/Director)
+
+| Capability | Description |
+|------------|-------------|
+| Workflow graph | Define task stages and transitions |
+| State machine | Track task status through lifecycle |
+| Task creation | Spawn subtasks for workers |
+| Policy enforcement | Apply risk tiers, approval gates |
+| Output merging | Combine worker artifacts |
+| Delivery | Return final result to user |
+
+### 4.2 Worker Agents
+
+| Role | Tools | Workspace |
+|------|-------|-----------|
+| PM | GitHub Issues, Docs | pm-workspace |
+| Designer | Figma API, Docs | designer-workspace |
+| Dev | Git, Tests, Browser | dev-workspace |
+| QA | Tests, Security scans | qa-workspace |
+| Security | SAST, dependency scans | security-workspace |
+| Release | CI/CD, Deploy | release-workspace |
+
+### 4.3 Blackboard (Shared Task Workspace)
+
+The "team memory" - single source of truth per task.
+
+### 4.4 Task Queue
+
+Tracks status, dependencies, assignments, retries for durability.
+
+### 4.5 Policy Engine
+
+| Function | Description |
+|----------|-------------|
+| Role permissions | Who can do what |
+| Risk tiers | Low/Medium/High/Critical gates |
+| Preflight checks | Input validation before execution |
+| Postflight checks | Output validation after execution |
 
 ---
 
-## Handoff Protocol
+## 5. Risk Tiers & Permissions
 
-Each handoff MUST include:
+### 5.1 Risk Tiers
 
-1. **What was done** - Summary of work completed
-2. **Where artifacts are** - Exact file paths
-3. **How to verify** - Test commands, acceptance criteria
-4. **Known issues** - Anything incomplete or risky
-5. **What's next** - Clear next action for receiving role
+| Tier | Description | Permissions |
+|------|-------------|-------------|
+| **Low** | Read-only, docs, research, code generation in sandbox | Basic tools |
+| **Medium** | Code changes + tests + PRs allowed | No secrets changes |
+| **High** | Dependency upgrades, infra, deployments | Require human approval |
+| **Critical** | Production incidents, credential actions | Multi-approval + incident mode |
+
+### 5.2 Tool Permission Matrix
+
+| Role | Git Write | Run Tests | Web Search | Secrets | Deploy |
+|------|-----------|-----------|------------|---------|--------|
+| PM | ✗ | ✗ | ✓ | ✗ | ✗ |
+| Designer | ✗ | ✗ | ✓ | ✗ | ✗ |
+| Dev | ✓ | ✓ | ✓ | ✗ | ✗ |
+| QA | ✗ | ✓ | ✓ | ✗ | ✗ |
+| Release | ✓ | ✓ | ✓ | ✗ | ✓ (gate) |
 
 ---
 
-## Directory Structure
+## 6. Guardrail Hooks
+
+### Preflight (Before Execution)
+- Validate input
+- Pick collaboration mode
+- Set budgets (max_tool_calls, max_tokens)
+- Sanitize prompts
+
+### During (Tool Call Policy)
+- Deny prohibited calls
+- Ask for approval on sensitive calls
+- Rate-limit expensive operations
+
+### Postflight (After Execution)
+- Artifact validators
+- Security checks
+- Regression evaluations
+
+---
+
+## 7. Observability
+
+### Required
+
+| Metric | Description |
+|--------|-------------|
+| **Trace ID** | Per task + per stage |
+| **Event log** | Structured NDJSON |
+| **Run summary** | What happened, costs, failures, decisions |
+| **Checkpoints** | Artifact hashes in state.json |
+
+### Nice-to-Have (v2.3+)
+- UI dashboard showing task queue, stage status
+- Cost graphs
+- "Time travel" re-run from checkpoint
+
+---
+
+## 8. MCP Stance
+
+### v2.2 Recommendation
+
+| Tool Type | Approach |
+|-----------|----------|
+| Internal tools | Keep native (git, filesystem, tests, local analyzers) |
+| External services | Add MCP as optional tool bus (search, ticketing, cloud actions) |
+
+**When MCP pays off**: Multi-provider, many tools, many agents, frequent tool changes.
+
+---
+
+## 9. Upgrade Path to OpenClaw Agent Teams
+
+When Agent Teams is available:
+
+1. Replace "blackboard polling" with team shared state + messaging
+2. Keep same artifacts/state/event formats (no workflow rewrite)
+3. Add "agent can spawn subtasks" rules via policy engine
+
+---
+
+## 10. Implementation Checklist
+
+- [ ] Finalize schemas: task.json, state.json, envelope schemas
+- [ ] Blackboard + queue: directory conventions + stage transitions
+- [ ] Validators: spec/design/code/qa minimal checks
+- [ ] Event log: NDJSON writer + trace_id propagation
+- [ ] Policy engine v1: role permissions + risk tier gates
+- [ ] (Optional) MCP gateway for external tools
+
+---
+
+## 11. Directory Structure
 
 ```
 multi-agent-framework/
 ├── config/
 │   ├── providers.yaml      # LLM provider configs
-│   ├── roles.yaml         # Role definitions (PM, Designer, Devs, QA)
+│   ├── roles.yaml         # Role definitions
 │   ├── tasks.yaml         # Task templates
-│   └── workflow.yaml      # SOP workflow definition
+│   ├── workflow.yaml      # SOP workflow
+│   └── policy.yaml        # Risk tiers, permissions
 │
-├── workspaces/             # Agent workspaces
+├── workspaces/            # Agent workspaces
 │   ├── pm-workspace/
 │   ├── designer-workspace/
-│   ├── dev-frontend-workspace/
-│   ├── dev-backend-workspace/
+│   ├── dev-workspace/
 │   ├── qa-workspace/
-│   └── admin-workspace/    # My workspace
+│   └── admin-workspace/
 │
-├── artifacts/              # Shared outputs (SOP artifacts)
-│   ├── tasks/
-│   │   └── {task-id}/
-│   │       ├── 01-requirement.md    # PM output
-│   │       ├── 02-design.md         # Designer output
-│   │       ├── 03-implementation/   # Dev output
-│   │       ├── 04-testing.md        # QA output
-│   │       └── state.json           # Task state
-│   └── shared/              # Shared context (SPEC.md, etc.)
+├── artifacts/             # Blackboard (task artifacts)
+│   └── tasks/
+│       └── {task-id}/
+│           ├── task.json
+│           ├── state.json
+│           ├── blackboard.md
+│           ├── decisions.md
+│           ├── artifacts/
+│           │   ├── spec/
+│           │   ├── design/
+│           │   ├── impl/
+│           │   ├── qa/
+│           │   └── release/
+│           └── logs/
+│               ├── events.ndjson
+│               └── summary.md
 │
-├── skills/                # Reusable skills
+├── schemas/               # JSON schemas
+│   ├── task.json
+│   ├── state.json
+│   └── envelope.json
+│
+├── validators/            # Stage validators
+│   ├── spec_validator.py
+│   ├── design_validator.py
+│   ├── code_linter.py
+│   └── qa_checker.py
+│
+├── skills/
 │   ├── agent-team-orchestration/
 │   └── brainstorming/
 │
 └── logs/                  # Execution logs
     └── {date}/
-        └── {task-id}.log
 ```
-
----
-
-## Implementation Phases
-
-### Phase 1: Infrastructure & Config (Current)
-- [x] Workspaces created
-- [ ] Config directory structure
-- [ ] providers.yaml
-- [ ] roles.yaml (full team)
-- [ ] workflow.yaml (SOP)
-
-### Phase 2: Core Framework
-- Provider abstraction
-- Role registry
-- Task lifecycle
-- Handoff protocols
-
-### Phase 3: PM + Designer First
-- Implement PM role
-- Implement Designer role
-- Test requirement → spec → design flow
-
-### Phase 4: Developers
-- Implement Dev roles (frontend, backend)
-- Implement code generation
-- Test implementation flow
-
-### Phase 5: QA
-- Implement QA role
-- Testing workflow
-- Full SOP integration
-
-### Phase 6: Robustness
-- Error handling
-- Fallbacks
-- Observability
 
 ---
 
 ## References
 
+- OpenClaw: https://github.com/openclaw/openclaw
 - MetaGPT: https://github.com/FoundationAgents/MetaGPT
-- MetaGPT Paper: Code = SOP(Team)
-- CrewAI: Role-based agents
+- CrewAI: https://github.com/crewAIInc/crewAI
+- Research: [./research.md](./research.md)
 
 ---
 
-*Last updated: 2026-02-22*
+*Last updated: 2026-02-23*

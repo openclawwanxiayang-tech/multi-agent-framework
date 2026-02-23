@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Envelope",
+  "description": "Structured handoff between agents",
+  "type": "object",
+  "required": ["task_id", "from_role", "to_role", "stage", "outputs"],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Task reference"
+    },
+    "from_role": {
+      "type": "string",
+      "description": "Sending role"
+    },
+    "to_role": {
+      "type": "string",
+      "description": "Receiving role (or 'director' for orchestrator)"
+    },
+    "stage": {
+      "type": "string",
+      "description": "Current workflow stage"
+    },
+    "outputs": {
+      "type": "object",
+      "description": "Artifacts produced",
+      "additionalProperties": {"type": "string"}
+    },
+    "claims": {
+      "type": "object",
+      "properties": {
+        "scope_locked": {"type": "boolean"},
+        "open_questions": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "timestamp": {"type": "string", "format": "date-time"},
+        "version": {"type": "integer"}
+      }
+    }
+  }
+}

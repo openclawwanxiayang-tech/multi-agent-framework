@@ -27,7 +27,8 @@ The key insight from Anthropic's research: **multi-agent architecture with lead 
 6. [Implementation Roadmap](#implementation-roadmap)
 7. [Repos/Tools Comparison](#repostools-comparison)
 8. [Recommended Next Steps](#recommended-next-steps)
-9. [MCP & External Tools Integration](#mcp--external-tools-integration)
+9. [Schema Definitions](./schemas/README.md) - JSON schemas for tasks, state, events
+10. [MCP & External Tools Integration](#mcp--external-tools-integration)
 10. [Communication Tools Integration](#communication-tools-integration)
 
 ---

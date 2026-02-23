@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Task",
+  "description": "Task identity and contract",
+  "type": "object",
+  "required": ["task_id", "title", "created_at", "mode", "risk_tier", "definition_of_done"],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Unique task identifier",
+      "pattern": "^T-\\d{4}-\\d{2}-\\d{2}-\\d{3}$"
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable task title"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["pipeline", "map_reduce", "incident"],
+      "description": "Collaboration mode"
+    },
+    "risk_tier": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"],
+      "description": "Risk classification"
+    },
+    "definition_of_done": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Checklist of completion criteria"
+    },
+    "budgets": {
+      "type": "object",
+      "properties": {
+        "max_tool_calls": {"type": "integer", "minimum": 1},
+        "max_total_tokens": {"type": "integer", "minimum": 1}
+      }
+    },
+    "parent_task_id": {
+      "type": "string",
+      "description": "For subtasks, reference to parent"
+    }
+  }
+}
