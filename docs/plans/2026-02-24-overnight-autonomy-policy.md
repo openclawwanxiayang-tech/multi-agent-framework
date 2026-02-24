@@ -30,3 +30,10 @@
 ## Notes
 - Set `WORK_CYCLE_CMD` in `config/overnight-runner.env` to plug in the actual autonomous work executor.
 - Current setup fixes the reliability/control gap and gives evidence trails for every checkpoint.
+
+## Execution discipline (user directive)
+- For every material change, update all three where applicable:
+  1) **Docs** (design/policy/run-log artifacts)
+  2) **Issues** (status, blockers, decisions)
+  3) **PRs** (what changed, risk, review notes)
+- No silent changes: each work step must leave a trace in at least one repo artifact and one GitHub thread.
