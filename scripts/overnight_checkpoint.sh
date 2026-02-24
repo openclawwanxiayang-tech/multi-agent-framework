@@ -11,7 +11,7 @@ mkdir -p "$WORKDIR/.logs"
 [[ -f "$ENV_FILE" ]] && source "$ENV_FILE"
 : "${PUSH_POLICY:=checks_pass}"
 : "${ON_CHECK_FAIL:=commit_wip_no_push}"
-: "${BRANCH:=fix/mvp-surface-area}"
+: "${BRANCH:=$(git -C "$WORKDIR" rev-parse --abbrev-ref HEAD 2>/dev/null || echo master)}"
 : "${REMOTE:=origin}"
 : "${WORK_CYCLE_CMD:=}"
 
