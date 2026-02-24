@@ -70,25 +70,18 @@ fi
 checks_result="$(run_checks)"
 checks_code="${checks_result%%:*}"
 
+append_runlog "task=checkpoint_end"
+
 if ! git diff --quiet || ! git diff --cached --quiet; then
   git add -A
   if [[ "$checks_code" == "1" ]]; then
     git commit -m "ops: overnight checkpoint $(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M')" >> "$CHECK_LOG" 2>&1 || true
-    append_runlog "task=checkpoint_commit | checks=pass"
     if [[ "$PUSH_POLICY" == "checks_pass" ]]; then
-      git push "$REMOTE" "$BRANCH" >> "$CHECK_LOG" 2>&1 || append_runlog "task=checkpoint_push | checks=pass | status=failed"
-      append_runlog "task=checkpoint_push | checks=pass | status=attempted"
+      git push "$REMOTE" "$BRANCH" >> "$CHECK_LOG" 2>&1 || true
     fi
   else
     if [[ "$ON_CHECK_FAIL" == "commit_wip_no_push" ]]; then
       git commit -m "wip: overnight checkpoint failed-checks $(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M')" >> "$CHECK_LOG" 2>&1 || true
-      append_runlog "task=checkpoint_commit | checks=fail | policy=commit_wip_no_push"
-    else
-      append_runlog "task=checkpoint_skip_commit | checks=fail"
     fi
   fi
-else
-  append_runlog "task=checkpoint_no_changes"
 fi
-
-append_runlog "task=checkpoint_end"
