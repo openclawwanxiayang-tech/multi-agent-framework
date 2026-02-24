@@ -25,3 +25,4 @@ Operational runtime automation for a specific OpenClaw host (long-running cron j
   - `*/30` checkpoint
   - `*/10` watchdog
 - Stale-condition simulation confirmed watchdog alert path.
+- Session map auto-sync added externally (`sync_session_map.sh`, cron `*/2`) to keep channel/session mapping up to date.
