@@ -16,3 +16,12 @@ Operational runtime automation for a specific OpenClaw host (long-running cron j
 - Keeps framework repo focused on reusable product architecture/specs.
 - Prevents host-specific automation from polluting product PRs.
 - Reduces accidental coupling between runtime operations and framework design changes.
+
+## Verification snapshot (2026-02-24)
+
+- External longrun scripts smoke-tested successfully.
+- Scheduled execution verified with accelerated cron drill, then restored to:
+  - `*/15` progress log
+  - `*/30` checkpoint
+  - `*/10` watchdog
+- Stale-condition simulation confirmed watchdog alert path.
