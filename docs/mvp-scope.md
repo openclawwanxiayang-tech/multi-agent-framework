@@ -66,7 +66,7 @@ The MVP is complete only when all of the following pass:
 | Incident mode | Deferred to v2.3 (depends on stronger policy + approvals UX) |
 | Dashboards / exports | Nice-to-have; deferred |
 | LangSmith/ELK export | Optional; deferred |
-| Chat platforms (Discord/Telegram/Feishu) deferred to v2 | Strongly recommended.4+ (scope expansion risk) |
+| Chat platforms (Discord/Telegram/Feishu) | Deferred to v2.4+ (scope expansion risk) |
 
 ---
 
