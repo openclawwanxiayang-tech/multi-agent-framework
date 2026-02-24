@@ -23,6 +23,12 @@ Things like:
 ### GitHub
 
 - **multi-agent-framework** → https://github.com/openclawwanxiayang-tech/multi-agent-framework
+- **DndCharacterBuilder** → https://github.com/WanxiaJaneYang/DndCharacterBuilder
+
+### Workspaces
+
+- **DndCharacterBuilder** → /mnt/d/aiProjects/workspaces/DndCharacterBuilder (primary)
+- **cursor-dndCharacterBuilder** → /mnt/d/aiProjects/workspaces/cursor-dndCharacterBuilder
 
 ### Cameras
 
