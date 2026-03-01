@@ -1,0 +1,25 @@
+[fix/mvp-surface-area b507431] ops: overnight checkpoint 2026-02-24 08:35
+ 7 files changed, 208 insertions(+)
+ create mode 100644 .logs/push_progress_log.cron.log
+ create mode 100644 config/overnight-runner.env
+ create mode 100644 docs/plans/2026-02-24-overnight-autonomy-policy.md
+ create mode 100755 scripts/overnight_checkpoint.sh
+ create mode 100755 scripts/overnight_watchdog.sh
+To https://github.com/openclawwanxiayang-tech/multi-agent-framework.git
+   d8d353a..b507431  fix/mvp-surface-area -> fix/mvp-surface-area
+[fix/mvp-surface-area fe05135] ops: overnight checkpoint 2026-02-24 08:39
+ 5 files changed, 77 insertions(+), 1 deletion(-)
+ create mode 100644 artifacts/overnight/20260224-083917-cycle.md
+ create mode 100755 scripts/overnight_work_cycle.sh
+To https://github.com/openclawwanxiayang-tech/multi-agent-framework.git
+   4aebbce..fe05135  fix/mvp-surface-area -> fix/mvp-surface-area
+[fix/mvp-surface-area e33fe09] ops: overnight checkpoint 2026-02-24 08:40
+ 4 files changed, 35 insertions(+), 10 deletions(-)
+ create mode 100644 artifacts/overnight/20260224-084024-cycle.md
+To https://github.com/openclawwanxiayang-tech/multi-agent-framework.git
+   fe05135..e33fe09  fix/mvp-surface-area -> fix/mvp-surface-area
+[fix/mvp-surface-area b494f7c] ops: overnight checkpoint 2026-02-24 09:00
+ 3 files changed, 24 insertions(+)
+ create mode 100644 artifacts/overnight/20260224-090001-cycle.md
+To https://github.com/openclawwanxiayang-tech/multi-agent-framework.git
+   e33fe09..b494f7c  fix/mvp-surface-area -> fix/mvp-surface-area
