@@ -1,13 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$version": "1.0.0",
   "title": "Event",
-  "description": "Append-only event log entry (NDJSON)",
+  "description": "Append-only event log entry (NDJSON) - v1.0.0",
   "type": "object",
-  "required": ["ts", "trace_id", "task_id", "agent", "type"],
+  "required": ["$version", "ts", "trace_id", "task_id", "agent", "type"],
   "properties": {
-    "event_id": {
+    "$version": {
       "type": "string",
-      "description": "Unique event ID (UUID)"
+      "const": "1.0.0",
+      "description": "Schema version for migration tracking"
     },
     "ts": {
       "type": "string",
@@ -32,30 +34,7 @@
     },
     "type": {
       "type": "string",
-      "enum": [
-        "artifact_write",
-        "artifact_read",
-        "tool_call",
-        "tool_result",
-        "validator",
-        "validator_result",
-        "stage_transition",
-        "approval",
-        "approval_granted",
-        "approval_denied",
-        "error",
-        "state_recovered",
-        "state_load_failed",
-        "lock_acquired",
-        "lock_released",
-        "lock_recovered",
-        "checkpoint_verified",
-        "checkpoint_mismatch",
-        "recovery_started",
-        "recovery_blocked",
-        "recovery_skipped",
-        "recovery_failed"
-      ],
+      "enum": ["artifact_write", "artifact_read", "tool_call", "validator", "stage_transition", "approval", "error"],
       "description": "Event type"
     },
     "path": {

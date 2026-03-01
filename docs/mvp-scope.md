@@ -16,6 +16,7 @@ This document defines exactly what "v2.2 MVP" includes. All other features are e
 | **Schemas frozen + versioned** | ✅ `task.json/state.json/envelope.json/event.json` are the contract |
 | **Stage machine semantics defined** | ✅ Allowed transitions + retry/escalation + checkpoint/resume rules |
 | **Concurrency protocol** | ✅ File-lock + atomic write + stale lock recovery for repo-native queue |
+| **Startup recovery policy** | ✅ Automatic resume on crash/restart with checkpoint verification |
 
 ### Notes on "Policy engine v1"
 
@@ -44,9 +45,12 @@ The MVP is complete only when all of the following pass:
 4. **Policy enforcement is real**
    - A deliberately forbidden tool action is **blocked**.
    - The denial is recorded in `events.ndjson` with role/tool/risk tier context.
+   - A high-risk action is blocked unless an approval record exists.
 
-5. **Durability / resume works**
+5. **Durability / startup recovery works**
    - Kill the run mid-stage → resume from checkpoint → finish successfully.
+   - Orchestrator crash/restart triggers automatic scan and recovery of unfinished tasks.
+   - Crash/restart demo passes: start pipeline → kill orchestrator mid-stage → restart → resumes and completes.
    - Artifact hashes referenced in state checkpoints remain consistent (or changes are explicitly recorded as a new checkpoint).
 
 ---
@@ -60,7 +64,7 @@ The MVP is complete only when all of the following pass:
 | Incident mode | Deferred to v2.3 (depends on stronger policy + approvals UX) |
 | Dashboards / exports | Nice-to-have; deferred |
 | LangSmith/ELK export | Optional; deferred |
-| Chat platforms (Discord/Telegram/Feishu) deferred to v2 | Strongly recommended.4+ (scope expansion risk) |
+| Chat platforms (Discord/Telegram/Feishu) | Deferred to v2.4+ (scope expansion risk) |
 
 ---
 

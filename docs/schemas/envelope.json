@@ -1,10 +1,16 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$version": "1.0.0",
   "title": "Envelope",
-  "description": "Structured handoff between agents",
+  "description": "Structured handoff between agents - v1.0.0",
   "type": "object",
-  "required": ["task_id", "from_role", "to_role", "stage", "outputs"],
+  "required": ["$version", "task_id", "from_role", "to_role", "stage", "outputs"],
   "properties": {
+    "$version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Schema version for migration tracking"
+    },
     "task_id": {
       "type": "string",
       "description": "Task reference"
