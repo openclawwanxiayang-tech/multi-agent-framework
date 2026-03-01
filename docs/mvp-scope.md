@@ -45,15 +45,13 @@ The MVP is complete only when all of the following pass:
 4. **Policy enforcement is real**
    - A deliberately forbidden tool action is **blocked**.
    - The denial is recorded in `events.ndjson` with role/tool/risk tier context.
+   - A high-risk action is blocked unless an approval record exists.
 
-5. **Durability / resume works**
+5. **Durability / startup recovery works**
    - Kill the run mid-stage → resume from checkpoint → finish successfully.
+   - Orchestrator crash/restart triggers automatic scan and recovery of unfinished tasks.
+   - Crash/restart demo passes: start pipeline → kill orchestrator mid-stage → restart → resumes and completes.
    - Artifact hashes referenced in state checkpoints remain consistent (or changes are explicitly recorded as a new checkpoint).
-
-6. **Startup recovery works**
-   - Orchestrator crashes → restarts → automatically scans and recovers unfinished tasks.
-   - Crash/restart demo test passes: start pipeline → kill orchestrator mid-stage → restart → resumes and completes.
-   - Policy blocks a high-risk action without approval.
 
 ---
 
