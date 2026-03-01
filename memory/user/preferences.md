@@ -10,6 +10,7 @@ Synced from USER.md and SOUL.md. Update when preferences change.
 - Prefers concise communication
 - Wants proactive updates on long-running tasks
 - Values traceable decisions (docs + issues + PRs updated together)
+- Expects all delivered changes to be pushed to remote with a review MR/PR opened for approval
 
 ## Automation
 - Runs overnight/longrun sessions for autonomous work

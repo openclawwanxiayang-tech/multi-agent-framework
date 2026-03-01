@@ -7,6 +7,7 @@ _Learn about the person you're helping. Update this as you go._
 - **Pronouns:** _(optional)_
 - **Timezone:**
 - **Notes:**
+  - Default workflow preference: after delivering work, push to remote and open an MR/PR for review/approval.
 
 ## Context
 

@@ -19,3 +19,7 @@ Important choices and why.
 
 ## Documentation Discipline
 - Every material change updates docs + issues + PRs
+
+## Review Gate Policy (2026-03-01)
+- For delivered work, always push to remote and open an MR/PR for review and approval.
+- Treat this as default workflow unless explicitly told otherwise.
