@@ -26,20 +26,24 @@ This section defines exactly what "v2.2 MVP" includes. All other features are ex
 |---------|--------|
 | **Pipeline mode only** | ✅ Default and only mode for MVP |
 | **Repo-native queue** | ✅ `artifacts/tasks/*/state.json` file-based |
-| **events.ndjson logging** | ✅ Structured event log with trace_id |
-| **Policy engine v1** | ✅ allow/deny/require-approval hooks |
+| **events.ndjson logging** | ✅ Structured event log with `trace_id` |
+| **Policy engine v1** | ✅ Enforced allow/deny/require-approval checks |
 | **E2E vertical slice** | ✅ One end-to-end run proving the loop |
+| **Schemas frozen + versioned** | ✅ `task.json/state.json/envelope.json/event.json` are the contract |
+| **Stage machine semantics defined** | ✅ Allowed transitions + retry/escalation + checkpoint/resume rules |
+| **Concurrency protocol** | ✅ File-lock + atomic write + stale lock recovery for repo-native queue |
+| **Startup recovery policy** | ✅ Automatic resume on crash/restart with checkpoint verification |
 
 ### Explicitly Deferred (Not in MVP)
 
 | Feature | Reason |
 |---------|--------|
 | Map-reduce mechanics | Deferred to v2.3 |
-| MCP integration | Optional, external tools only |
-| Chat platforms (Discord/Telegram/Feishu) | Deferred to v2.3 |
-| Dashboards / exports | Nice-to-have, deferred |
-| Incident mode | Deferred to v2.3 |
-| LangSmith/ELK export | Optional, deferred |
+| MCP integration | Optional; external tools only; deferred to v2.3 |
+| Incident mode | Deferred to v2.3 (depends on stronger policy + approvals UX) |
+| Dashboards / exports | Nice-to-have; deferred |
+| LangSmith/ELK export | Optional; deferred |
+| Chat platforms (Discord/Telegram/Feishu) | Deferred to v2.4+ (scope expansion risk) |
 
 ### Why Freeze Scope?
 
