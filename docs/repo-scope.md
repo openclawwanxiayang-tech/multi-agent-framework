@@ -11,6 +11,9 @@ This repository is for the **multi-agent framework product artifacts** only.
 - personal assistant identity/memory files (`SOUL.md`, `USER.md`, etc.)
 - local personal skill/memory bundles (`skills/`, `memory/`)
 
+## Repo Boundary Guard
+If `myOpenClaw/` exists as a sibling/nested working folder during local operations, treat it as a separate git repository. Progress/status scripts in this repo must report only `multi-agent-framework` unless explicitly designed for cross-repo reporting.
+
 ## Migration Reference
 Out-of-scope artifacts were migrated to:
 - `openclawwanxiayang-tech/myOpenClaw`
