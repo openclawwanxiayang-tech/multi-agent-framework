@@ -1,0 +1,16 @@
+# OpenClaw personal/runtime artifacts (out of product repo scope)
+.logs/
+.openclaw/
+.pi/
+
+# Personal assistant identity/memory workspace files
+SOUL.md
+USER.md
+IDENTITY.md
+BOOTSTRAP.md
+HEARTBEAT.md
+TOOLS.md
+
+# Local skill/memory bundles (personal workspace)
+skills/
+memory/
