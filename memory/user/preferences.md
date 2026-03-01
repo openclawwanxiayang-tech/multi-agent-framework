@@ -11,6 +11,7 @@ Synced from USER.md and SOUL.md. Update when preferences change.
 - Wants proactive updates on long-running tasks
 - Values traceable decisions (docs + issues + PRs updated together)
 - Expects all delivered changes to be pushed to remote with a review MR/PR opened for approval
+- Expects PR approval/merge only after all review conversations are resolved
 
 ## Automation
 - Runs overnight/longrun sessions for autonomous work

@@ -8,6 +8,7 @@ _Learn about the person you're helping. Update this as you go._
 - **Timezone:**
 - **Notes:**
   - Default workflow preference: after delivering work, push to remote and open an MR/PR for review/approval.
+  - Approve/merge PRs only after all review conversations are resolved.
 
 ## Context
 
