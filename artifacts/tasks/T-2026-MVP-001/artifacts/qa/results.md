@@ -29,6 +29,15 @@
 | events.ndjson contains all events | ✅ |
 | state.json shows full lifecycle | ✅ |
 
+## Pass/Fail Summary
+- Pass: all documented checks above.
+- Fail: none observed.
+
+## Evidence
+- Source: `artifacts/impl/main.go`
+- Tests: `artifacts/impl/main_test.go`
+- Logs: `logs/events.ndjson`
+
 ## Notes
 - Go not installed on host, validated via static analysis
 - All acceptance criteria from SPEC.md met

@@ -56,9 +56,12 @@ def main():
                 results.append((task_dir.name, valid, msg))
         
         print("Code Linter Results:")
+        any_failed = False
         for name, valid, msg in results:
             status = "✅" if valid else "❌"
             print(f"  {status} {name}: {msg}")
+            any_failed = any_failed or (not valid)
+        sys.exit(1 if any_failed else 0)
     else:
         task_path = Path(sys.argv[1])
         valid, msg = validate_code(task_path)

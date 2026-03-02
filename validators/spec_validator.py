@@ -16,11 +16,14 @@ from pathlib import Path
 def validate_spec(task_path: Path) -> tuple[bool, str]:
     """Validate SPEC.md for a task."""
     spec_path = task_path / "artifacts" / "spec" / "spec.md"
-    
+    acceptance_path = task_path / "artifacts" / "spec" / "acceptance.md"
+
     if not spec_path.exists():
         return False, f"SPEC.md not found at {spec_path}"
-    
-    content = spec_path.read_text()
+    if not acceptance_path.exists():
+        return False, f"acceptance.md not found at {acceptance_path}"
+
+    content = spec_path.read_text(encoding="utf-8")
     
     required_sections = ["Overview", "Requirements", "Acceptance Criteria"]
     missing = [s for s in required_sections if s not in content]
@@ -53,9 +56,12 @@ def main():
                 results.append((task_dir.name, valid, msg))
         
         print("Spec Validator Results:")
+        any_failed = False
         for name, valid, msg in results:
             status = "✅" if valid else "❌"
             print(f"  {status} {name}: {msg}")
+            any_failed = any_failed or (not valid)
+        sys.exit(1 if any_failed else 0)
     else:
         # Validate specific task
         task_path = Path(sys.argv[1])

@@ -21,7 +21,7 @@ def validate_design(task_path: Path) -> tuple[bool, str]:
     
     content = design_path.read_text()
     
-    required_sections = ["Architecture", "Implementation"]
+    required_sections = ["Architecture", "Implementation", "Error", "Test"]
     missing = [s for s in required_sections if s not in content]
     
     if missing:
@@ -44,9 +44,12 @@ def main():
                 results.append((task_dir.name, valid, msg))
         
         print("Design Validator Results:")
+        any_failed = False
         for name, valid, msg in results:
             status = "✅" if valid else "❌"
             print(f"  {status} {name}: {msg}")
+            any_failed = any_failed or (not valid)
+        sys.exit(1 if any_failed else 0)
     else:
         task_path = Path(sys.argv[1])
         valid, msg = validate_design(task_path)
