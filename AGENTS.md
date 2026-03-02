@@ -1,3 +1,13 @@
+# Model Selection Guidelines
+
+| Task Type | Model | Provider |
+|-----------|-------|----------|
+| Research / Planning | openai/o4-mini-deep-research | OpenAI (thinking) |
+| Code | openai-codex/gpt-5.3-codex | OpenAI Codex |
+| Normal work | minimax-portal/MiniMax-M2.1 | MiniMax |
+
+---
+
 # AGENTS.md - Agent-Friendly Repository
 
 This repository is designed for AI agents to work with. It follows Anthropic's best practices for agent-friendly repos.
