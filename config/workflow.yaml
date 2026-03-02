@@ -1,0 +1,59 @@
+# Workflow Configuration
+
+Defines pipeline stages and transitions.
+
+## Pipeline Stages
+
+```yaml
+stages:
+  - name: SPEC
+    description: "Requirements gathering"
+    next: DESIGN
+    allow_skip: false
+  
+  - name: DESIGN
+    description: "Design creation"
+    next: IMPLEMENT
+    allow_skip: false
+  
+  - name: IMPLEMENT
+    description: "Implementation"
+    next: QA
+    allow_skip: false
+  
+  - name: QA
+    description: next: DONE
+ "Testing"
+       allow_skip: false
+  
+  - name: REVIEW
+    description: "Code review"
+    next: QA
+    allow_skip: false
+  
+  - name: DONE
+    description: "Completed"
+    next: null
+    allow_skip: false
+```
+
+## Stage Transitions
+
+| From | To | Condition |
+|------|----|-----------|
+| SPEC | DESIGN | spec approved |
+| DESIGN | IMPLEMENT | design approved |
+| IMPLEMENT | REVIEW | code complete |
+| REVIEW | IMPLEMENT | changes requested |
+| REVIEW | QA | approved |
+| QA | DONE | tests pass |
+| QA | IMPLEMENT | fixes needed |
+
+## Retry Policy
+
+```yaml
+retry:
+  max_attempts: 3
+  backoff_ms: 1000
+  backoff_multiplier: 2
+```

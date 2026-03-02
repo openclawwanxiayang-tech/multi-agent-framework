@@ -1,0 +1,88 @@
+# Agent Roles Configuration
+
+Defines roles and their permissions in the multi-agent framework.
+
+## Roles
+
+| Role | Description | Default Permissions |
+|------|-------------|---------------------|
+| orchestrator | Admin/coordinator | all |
+| pm | Product Manager | read, docs, issues |
+| designer | UI/UX Designer | read, docs |
+| dev | Developer | read, write:code, tests |
+| qa | QA Engineer | read, tests, reports |
+| release | Release Manager | read, deploy |
+
+## Permission Matrix
+
+```yaml
+roles:
+  orchestrator:
+    description: "Admin coordinator"
+    permissions:
+      - "*"
+    boundaries:
+      - none
+  
+  pm:
+    description: "Product Manager"
+    permissions:
+      - "read:all"
+      - "write:docs"
+      - "write:spec"
+      - "create:issues"
+    boundaries:
+      - "workspace: pm-workspace"
+      - "no:code"
+  
+  designer:
+    description: "UI/UX Designer"
+    permissions:
+      - "read:all"
+      - "write:docs"
+      - "write:design"
+    boundaries:
+      - "workspace: designer-workspace"
+      - "no:code"
+  
+  dev:
+    description: "Developer"
+    permissions:
+      - "read:all"
+      - "write:code"
+      - "write:tests"
+      - "create:pr"
+    boundaries:
+      - "workspace: dev-workspace"
+      - "no:deploy"
+  
+  qa:
+    description: "QA Engineer"
+    permissions:
+      - "read:all"
+      - "write:tests"
+      - "write:reports"
+    boundaries:
+      - "workspace: qa-workspace"
+      - "no:modify_source"
+  
+  release:
+    description: "Release Manager"
+    permissions:
+      - "read:all"
+      - "deploy"
+      - "create:release"
+    boundaries:
+      - "require_approval"
+```
+
+## Risk Tier Mapping
+
+| Role | Default Tier |
+|------|--------------|
+| orchestrator | critical |
+| pm | low |
+| designer | low |
+| dev | medium |
+| qa | medium |
+| release | high |
