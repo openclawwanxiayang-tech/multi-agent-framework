@@ -21,8 +21,14 @@ def main():
     
     cleared = 0
     for j in jobs:
+        if not isinstance(j, dict):
+            continue
         if "runningAtMs" in j:
             del j["runningAtMs"]
+            cleared += 1
+        state = j.get("state")
+        if isinstance(state, dict) and "runningAtMs" in state:
+            del state["runningAtMs"]
             cleared += 1
     
     if cleared:
