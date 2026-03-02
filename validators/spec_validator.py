@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+"""
+spec_validator.py - Validate SPEC.md against task requirements
+
+Validates that:
+- SPEC.md exists in artifacts/spec/
+- Has required sections (Overview, Requirements, Acceptance Criteria)
+- Acceptance criteria are testable
+"""
+
+import json
+import sys
+from pathlib import Path
+
+
+def validate_spec(task_path: Path) -> tuple[bool, str]:
+    """Validate SPEC.md for a task."""
+    spec_path = task_path / "artifacts" / "spec" / "spec.md"
+    
+    if not spec_path.exists():
+        return False, f"SPEC.md not found at {spec_path}"
+    
+    content = spec_path.read_text()
+    
+    required_sections = ["Overview", "Requirements", "Acceptance Criteria"]
+    missing = [s for s in required_sections if s not in content]
+    
+    if missing:
+        return False, f"Missing sections: {', '.join(missing)}"
+    
+    # Check acceptance criteria are present
+    if "Acceptance Criteria" in content:
+        lines = content.split("\n")
+        criteria_count = sum(1 for l in lines if l.strip().startswith(tuple('1234567890.-')))
+        if criteria_count < 1:
+            return False, "No acceptance criteria found"
+    
+    return True, "Valid SPEC.md"
+
+
+def main():
+    if len(sys.argv) < 2:
+        # Validate all tasks in artifacts/tasks/
+        artifacts = Path("artifacts/tasks")
+        if not artifacts.exists():
+            print("No artifacts/tasks/ directory found")
+            sys.exit(0)
+        
+        results = []
+        for task_dir in artifacts.iterdir():
+            if task_dir.is_dir():
+                valid, msg = validate_spec(task_dir)
+                results.append((task_dir.name, valid, msg))
+        
+        print("Spec Validator Results:")
+        for name, valid, msg in results:
+            status = "✅" if valid else "❌"
+            print(f"  {status} {name}: {msg}")
+    else:
+        # Validate specific task
+        task_path = Path(sys.argv[1])
+        valid, msg = validate_spec(task_path)
+        print(msg)
+        sys.exit(0 if valid else 1)
+
+
+if __name__ == "__main__":
+    main()
