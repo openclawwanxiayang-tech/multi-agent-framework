@@ -1,0 +1,6 @@
+{
+  "last_checked_time": "2026-03-02T22:09:00+08:00",
+  "event_line_count": 6,
+  "last_event_line": "DONE 2026-03-02T22:03:04+08:00 issue=63 pr=65 branch=issue-63-unresolved-rules-20260302 checks=pending",
+  "status_raw": "{\"state\":\"completed\",\"timestamp\":\"2026-03-02T22:03:04+08:00\",\"details\":{\"issue\":63,\"pr\":65,\"branch\":\"issue-63-unresolved-rules-20260302\",\"checks\":\"pending\"}}"
+}
