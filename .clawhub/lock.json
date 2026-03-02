@@ -12,6 +12,54 @@
     "cron-doctor": {
       "version": "1.0.1",
       "installedAt": 1772461461709
+    },
+    "memory-tiering": {
+      "version": "1.0.0",
+      "installedAt": 1772462001783
+    },
+    "openclaw-security-hardening": {
+      "version": "1.1.0",
+      "installedAt": 1772462042053
+    },
+    "cron-worker-guardrails": {
+      "version": "1.0.5",
+      "installedAt": 1772462046245
+    },
+    "casual-cron": {
+      "version": "1.2.0",
+      "installedAt": 1772462048762
+    },
+    "glitchward-shield": {
+      "version": "1.0.1",
+      "installedAt": 1772462466888
+    },
+    "authensor-gateway": {
+      "version": "0.7.0",
+      "installedAt": 1772462527660
+    },
+    "claw-permission-firewall": {
+      "version": "1.0.0",
+      "installedAt": 1772462657320
+    },
+    "skill-scanner": {
+      "version": "0.1.2",
+      "installedAt": 1772462667871
+    },
+    "learning": {
+      "version": "1.0.0",
+      "installedAt": 1772462870455
+    },
+    "request-approval": {
+      "version": "1.0.0",
+      "installedAt": 1772463013496
+    },
+    "ez-cronjob": {
+      "version": "1.0.0",
+      "installedAt": 1772463029098
+    },
+    "skill-scan": {
+      "version": "1.0.0",
+      "installedAt": 1772463199512
     }
   }
 }
