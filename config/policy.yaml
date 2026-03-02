@@ -1,0 +1,106 @@
+# Policy Configuration
+
+Risk tiers, permissions, and approval rules for the multi-agent framework.
+
+## Risk Tiers
+
+| Tier | What | Approval |
+|------|------|----------|
+| Low | Read-only, docs, research | Auto |
+| Medium | Code + tests + PRs | Auto |
+| High | Dep upgrades, infra, deploy | Human |
+| Critical | Production incidents, secrets | Multi-approval |
+
+## Path Restrictions
+
+```yaml
+policy:
+  path_restrictions:
+    allowed:
+      - "artifacts/**"
+      - "docs/**"
+      - "config/**"
+      - "workspaces/**"
+      - "validators/**"
+    denied:
+      - "**/secrets/**"
+      - "**/.env"
+      - "**/credentials/**"
+      - "**/keys/**"
+```
+
+## Branch Rules
+
+```yaml
+policy:
+  branch_rules:
+    require_pr: true
+    allowed_direct_push:
+      - "main"
+    require_reviews:
+      - "master"
+      - "main"
+```
+
+## Rate Limits
+
+```yaml
+policy:
+  rate_limits:
+    tool_calls_per_minute: 60
+    api_requests_per_hour: 1000
+```
+
+## Approval Workflow
+
+```yaml
+policy:
+  approval_workflow:
+    high_risk:
+      require_approval: true
+      approvers:
+        - "human-admin"
+    critical_risk:
+      require_approval: true
+      approvers:
+        - "human-admin"
+        - "human-sre"
+```
+
+## Tool Permissions by Risk Tier
+
+```yaml
+policy:
+  tool_permissions:
+    low:
+      allowed:
+        - "read"
+        - "web_search"
+        - "web_fetch"
+    medium:
+      allowed:
+        - "read"
+        - "write"
+        - "exec"
+        - "web_search"
+        - "web_fetch"
+        - "git"
+    high:
+      allowed:
+        - "read"
+        - "write"
+        - "exec"
+        - "git"
+        - "deploy"
+      require_approval: true
+    critical:
+      allowed:
+        - "read"
+        - "write"
+        - "exec"
+        - "git"
+        - "deploy"
+        - "security"
+      require_approval: true
+      multi_approval: true
+```
