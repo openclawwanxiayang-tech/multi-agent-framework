@@ -17,7 +17,7 @@
     },
     "stage": {
       "type": "string",
-      "enum": ["SPEC", "DESIGN", "MERGE_SPEC_DESIGN", "IMPLEMENT", "REVIEW", "QA", "RELEASE", "DONE"],
+      "enum": ["SPEC", "DESIGN", "IMPLEMENT", "REVIEW", "QA", "RELEASE", "DONE"],
       "description": "Current workflow stage"
     },
     "status": {

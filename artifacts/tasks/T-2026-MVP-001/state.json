@@ -1,0 +1,17 @@
+{
+  "$version": "1.0.0",
+  "task_id": "T-2026-MVP-001",
+  "stage": "DONE",
+  "status": "COMPLETED",
+  "assigned": [],
+
+  "created_at": "2026-03-02T11:38:00Z",
+  "completed_at": "2026-03-02T11:39:00Z",
+  "next": [],
+  "checkpoints": [
+    {"stage": "SPEC", "artifact": "artifacts/spec/spec.md", "completed_at": "2026-03-02T11:38:15Z"},
+    {"stage": "DESIGN", "artifact": "artifacts/design/design.md", "completed_at": "2026-03-02T11:38:30Z"},
+    {"stage": "IMPLEMENT", "artifact": "artifacts/impl/main.go", "completed_at": "2026-03-02T11:38:45Z"},
+    {"stage": "QA", "artifact": "artifacts/qa/results.md", "completed_at": "2026-03-02T11:39:00Z"}
+  ]
+}

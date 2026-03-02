@@ -9,6 +9,8 @@
 
 This document defines where and how policy is enforced in the v2.2 MVP.
 
+Source-of-truth and versioning hierarchy is defined in `docs/SOURCE_OF_TRUTH.md` and is normative for conflict resolution.
+
 ---
 
 ## Enforcement Points
