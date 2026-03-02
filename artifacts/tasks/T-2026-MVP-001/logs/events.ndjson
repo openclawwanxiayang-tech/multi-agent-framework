@@ -1,0 +1,9 @@
+{"version":"1.0.0","trace_id":"T-2026-MVP-001-001","task_id":"T-2026-MVP-001","timestamp":"2026-03-02T11:38:00Z","stage":"SPEC","event":"TASK_CREATED","actor":"system","details":{"mode":"pipeline","risk_tier":"low"}}
+{"version":"1.0.0","trace_id":"T-2026-MVP-001-002","task_id":"T-2026-MVP-001","timestamp":"2026-03-02T11:38:15Z","stage":"SPEC","event":"STAGE_COMPLETED","actor":"pm","details":{"artifact":"artifacts/spec/spec.md"}}
+{"version":"1.0.0","trace_id":"T-2026-MVP-001-003","task_id":"T-2026-MVP-001","timestamp":"2026-03-02T11:38:30Z","stage":"DESIGN","event":"STAGE_STARTED","actor":"designer","details":{"assigned":"agent-designer-1"}}
+{"version":"1.0.0","trace_id":"T-2026-MVP-001-004","task_id":"T-2026-MVP-001","timestamp":"2026-03-02T11:38:30Z","stage":"DESIGN","event":"STAGE_COMPLETED","actor":"designer","details":{"artifact":"artifacts/design/design.md"}}
+{"version":"1.0.0","trace_id":"T-2026-MVP-001-005","task_id":"T-2026-MVP-001","timestamp":"2026-03-02T11:38:45Z","stage":"IMPLEMENT","event":"STAGE_STARTED","actor":"dev","details":{"assigned":"agent-dev-1"}}
+{"version":"1.0.0","trace_id":"T-2026-MVP-001-006","task_id":"T-2026-MVP-001","timestamp":"2026-03-02T11:38:45Z","stage":"IMPLEMENT","event":"STAGE_COMPLETED","actor":"dev","details":{"artifact":"artifacts/impl/main.go"}}
+{"version":"1.0.0","trace_id":"T-2026-MVP-001-007","task_id":"T-2026-MVP-001","timestamp":"2026-03-02T11:39:00Z","stage":"QA","event":"STAGE_STARTED","actor":"qa","details":{"assigned":"agent-qa-1"}}
+{"version":"1.0.0","trace_id":"T-2026-MVP-001-008","task_id":"T-2026-MVP-001","timestamp":"2026-03-02T11:39:00Z","stage":"QA","event":"STAGE_COMPLETED","actor":"qa","details":{"artifact":"artifacts/qa/results.md"}}
+{"version":"1.0.0","trace_id":"T-2026-MVP-001-009","task_id":"T-2026-MVP-001","timestamp":"2026-03-02T11:39:00Z","stage":"DONE","event":"TASK_COMPLETED","actor":"system","details":{"all_stages_complete":true}}
