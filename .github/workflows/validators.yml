@@ -1,0 +1,30 @@
+name: Validators
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - 'artifacts/tasks/**'
+      - 'validators/**'
+  pull_request:
+    paths:
+      - 'artifacts/tasks/**'
+      - 'validators/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run spec validator
+        run: python3 validators/spec_validator.py artifacts/tasks/
+        
+      - name: Run design validator
+        run: python3 validators/design_validator.py artifacts/tasks/
+        
+      - name: Run code linter
+        run: python3 validators/code_linter.py artifacts/tasks/
+        
+      - name: Run QA checker
+        run: python3 validators/qa_checker.py artifacts/tasks/
