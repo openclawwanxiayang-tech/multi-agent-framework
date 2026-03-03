@@ -1,0 +1,44 @@
+[
+  {
+    "k": "奇迹冒险团的奇迹西征",
+    "text": "奇迹冒险团的奇迹西征 世界大厅  世界管理  术语管理",
+    "tag": "DIV",
+    "cls": "px-2 py-2 flex flex-wrap gap-2 items-center"
+  },
+  {
+    "k": "奇迹冒险团的奇迹西征",
+    "text": "奇迹冒险团的奇迹西征",
+    "tag": "DIV",
+    "cls": "flex-1 min-w-[180px]"
+  },
+  {
+    "k": "奇迹冒险团的奇迹西征",
+    "text": "奇迹冒险团的奇迹西征",
+    "tag": "DIV",
+    "cls": "n-select w-full"
+  },
+  {
+    "k": "奇迹冒险团的奇迹西征",
+    "text": "奇迹冒险团的奇迹西征",
+    "tag": "DIV",
+    "cls": "n-base-selection n-base-selection--selected"
+  },
+  {
+    "k": "奇迹冒险团的奇迹西征",
+    "text": "奇迹冒险团的奇迹西征",
+    "tag": "DIV",
+    "cls": "n-base-selection-label"
+  },
+  {
+    "k": "奇迹冒险团的奇迹西征",
+    "text": "奇迹冒险团的奇迹西征",
+    "tag": "DIV",
+    "cls": "n-base-selection-label__render-label n-base-selection-overlay"
+  },
+  {
+    "k": "奇迹冒险团的奇迹西征",
+    "text": "奇迹冒险团的奇迹西征",
+    "tag": "DIV",
+    "cls": "n-base-selection-overlay__wrapper"
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "text": "汉金斯克[*] (1)",
+  "own": "汉金斯克[*] (1)||",
+  "tag": "DIV",
+  "cls": "sider-item",
+  "attrs": {
+    "class": "sider-item"
+  },
+  "parent": {
+    "tag": "DIV",
+    "cls": "space-y-1 flex flex-col px-2",
+    "text": "冒险团休息室 (1)萨利亚森林 (4)99+萨利亚城市 (0)萨利亚地下都市 (0)测试[*] (0)汉金斯克[*] (1)New Channel 推送已开启显示全部子频道 频道排序  频道归档",
+    "attrs": {
+      "class": "space-y-1 flex flex-col px-2"
+    }
+  },
+  "grand": {
+    "tag": "DIV",
+    "cls": "n-tab-pane sc-sidebar-fill",
+    "text": "冒险团休息室 (1)萨利亚森林 (4)99+萨利亚城市 (0)萨利亚地下都市 (0)测试[*] (0)汉金斯克[*] (1)New Channel 推送已开启显示全部子频道 频道排序  频道归档",
+    "attrs": {
+      "class": "n-tab-pane sc-sidebar-fill"
+    }
+  }
+}
