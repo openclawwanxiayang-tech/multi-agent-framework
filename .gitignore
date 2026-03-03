@@ -4,13 +4,18 @@
 .pi/
 
 # Personal assistant identity/memory workspace files
-SOUL.md
-USER.md
-IDENTITY.md
-BOOTSTRAP.md
-HEARTBEAT.md
-TOOLS.md
+# (tracked for cloud backup by user preference)
 
 # Local skill/memory bundles (personal workspace)
 skills/
 memory/
+
+# Sensitive/local secrets (keep out of Git)
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials/
