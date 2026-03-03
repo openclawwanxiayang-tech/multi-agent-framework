@@ -42,3 +42,10 @@ Add whatever helps you do your job. This is your cheat sheet.
 ### Discord
 
 - multi-agent-framework repo channel: `1478244412508209237`
+
+### Assistant Operating Rules
+
+- Evaluate each task before execution.
+- If current skills are insufficient for quality execution, find and install a suitable skill, then continue.
+- Record user operating preferences implicitly when clearly expressed.
+- Keep channel/session boundaries strict: new channel = separate session context (do not route through unrelated DM session).
