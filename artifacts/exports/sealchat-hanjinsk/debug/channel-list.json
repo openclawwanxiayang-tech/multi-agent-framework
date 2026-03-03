@@ -1,0 +1,30 @@
+{
+  "echo": "e17725579007550.27635300695324583",
+  "data": {
+    "data": [
+      {
+        "id": "RVfdhMbVyvoRYVwr",
+        "createdAt": "2025-12-09T01:31:38.042968644+08:00",
+        "updatedAt": "2026-02-15T18:20:18.494942362+08:00",
+        "worldId": "SDJWsVXyc4T5IL4j",
+        "name": "公共世界大厅",
+        "note": "",
+        "rootId": "",
+        "parentId": "",
+        "isPrivate": false,
+        "recentSentAt": 1771150818494,
+        "userId": "9hq6oBLxJD5DrDTw",
+        "permType": "public",
+        "defaultDiceExpr": "d20",
+        "builtInDiceEnabled": false,
+        "botFeatureEnabled": true,
+        "status": "active",
+        "sortOrder": 0,
+        "backgroundAttachmentId": "",
+        "backgroundSettings": "",
+        "membersCount": 0
+      }
+    ],
+    "world_id": "SDJWsVXyc4T5IL4j"
+  }
+}

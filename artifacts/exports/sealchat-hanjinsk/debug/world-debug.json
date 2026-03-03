@@ -1,0 +1,19 @@
+{
+  "keys": [
+    "allowAdminEditMessages",
+    "allowMemberEditKeywords",
+    "editNoticeAcked",
+    "isMember",
+    "memberCount",
+    "memberRole",
+    "ownerNickname",
+    "world"
+  ],
+  "sample": [
+    {
+      "id": "rc5RIyAPBZQaZzdi",
+      "name": "奇迹冒险团的奇迹西征",
+      "parentId": ""
+    }
+  ]
+}
