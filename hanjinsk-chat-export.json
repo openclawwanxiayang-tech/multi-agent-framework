@@ -1,0 +1,68 @@
+{
+  "capturedAt": "2026-03-03T15:59:25.538Z",
+  "url": "http://110.40.203.209:3212/#/user/signin?redirect=/rc5RIyAPBZQaZzdi/i45KVSkrAS3Rz01n",
+  "title": "海豹尬聊 SealChat",
+  "messageCount": 12,
+  "messages": [
+    {
+      "text": "海豹尬聊 SealChat用户名/昵称/邮箱 *用户名/昵称/邮箱密码 *请输入注册 登录",
+      "className": "sign-in-content sc-form-scroll",
+      "tag": "DIV"
+    },
+    {
+      "text": "用户名/昵称/邮箱 *用户名/昵称/邮箱",
+      "className": "n-form-item n-form-item--medium-size n-form-item--top-labelled",
+      "tag": "DIV"
+    },
+    {
+      "text": "用户名/昵称/邮箱 *",
+      "className": "n-form-item-label n-form-item-label--right-mark",
+      "tag": "LABEL"
+    },
+    {
+      "text": "用户名/昵称/邮箱",
+      "className": "n-form-item-label__text",
+      "tag": "SPAN"
+    },
+    {
+      "text": "用户名/昵称/邮箱",
+      "className": "n-form-item-blank",
+      "tag": "DIV"
+    },
+    {
+      "text": "密码 *请输入",
+      "className": "n-form-item n-form-item--medium-size n-form-item--top-labelled",
+      "tag": "DIV"
+    },
+    {
+      "text": "密码 *",
+      "className": "n-form-item-label n-form-item-label--right-mark",
+      "tag": "LABEL"
+    },
+    {
+      "text": "密码",
+      "className": "n-form-item-label__text",
+      "tag": "SPAN"
+    },
+    {
+      "text": "请输入",
+      "className": "n-form-item-blank",
+      "tag": "DIV"
+    },
+    {
+      "text": "注册",
+      "className": "flex items-center gap-2",
+      "tag": "DIV"
+    },
+    {
+      "text": "注册",
+      "className": "n-button__content",
+      "tag": "SPAN"
+    },
+    {
+      "text": "登录",
+      "className": "n-button__content",
+      "tag": "SPAN"
+    }
+  ]
+}
