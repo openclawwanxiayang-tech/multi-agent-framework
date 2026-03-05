@@ -49,3 +49,13 @@ Add whatever helps you do your job. This is your cheat sheet.
 - If current skills are insufficient for quality execution, find and install a suitable skill, then continue.
 - Record user operating preferences implicitly when clearly expressed.
 - Keep channel/session boundaries strict: new channel = separate session context (do not route through unrelated DM session).
+
+### Skill Proactivity Policy (Jane preference)
+
+- Default behavior: proactively check whether a specialized skill exists before starting non-trivial tasks.
+- If one suitable skill exists, use it directly.
+- If multiple candidate skills exist, pick the most specific skill for the task and proceed.
+- If no suitable skill is installed, proactively search/fetch/install from ClawHub, then execute.
+- Do not wait for explicit user instruction to install/enable a missing skill when it clearly improves execution quality.
+- After installing a new skill, briefly report: what was installed and why.
+
