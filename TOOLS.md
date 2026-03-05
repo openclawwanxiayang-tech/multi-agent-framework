@@ -56,6 +56,8 @@ Add whatever helps you do your job. This is your cheat sheet.
 - If one suitable skill exists, use it directly.
 - If multiple candidate skills exist, pick the most specific skill for the task and proceed.
 - If no suitable skill is installed, proactively search/fetch/install from ClawHub, then execute.
+- Before any new skill installation, run a security scan first (prefer `skill-scan` / `skill-scanner`) and only proceed if scan result is clean or risk is explicitly approved.
+- Treat downloaded skills as untrusted until scanned; avoid executing newly installed skill actions before scan completion.
 - Do not wait for explicit user instruction to install/enable a missing skill when it clearly improves execution quality.
-- After installing a new skill, briefly report: what was installed and why.
+- After installing a new skill, briefly report: what was installed, scan result, and why.
 

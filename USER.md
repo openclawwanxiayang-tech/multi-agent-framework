@@ -14,6 +14,7 @@ _Learn about the person you're helping. Update this as you go._
   - User asked this preference to be written down and remembered.
   - Working on: DND Character Builder - a user-friendly, data-driven, extensible character builder tool.
   - For Discord bot setup, user wants new bots (e.g., PR Review Bot) to match existing bot channel access (same channel visibility/permissions), not just minimal baseline.
+  - When installing/downloading new skills, run safety scan first (use security scanning skills) before enabling/using them.
 
 ## Context
 
