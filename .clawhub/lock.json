@@ -60,6 +60,10 @@
     "skill-scan": {
       "version": "1.0.0",
       "installedAt": 1772463199512
+    },
+    "brainstorm": {
+      "version": "1.0.0",
+      "installedAt": 1772693061808
     }
   }
 }

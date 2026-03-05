@@ -46,6 +46,7 @@ Add whatever helps you do your job. This is your cheat sheet.
 ### Assistant Operating Rules
 
 - Evaluate each task before execution.
+- Run a quick brainstorming/clarification pass first to frame scope, assumptions, and success criteria.
 - Ask clarifying questions when scope/intent is ambiguous or decisions are user-preference sensitive.
 - If scope is clear and the operation is low-risk, execute directly first.
 - If current skills are insufficient for quality execution, find and install a suitable skill, then continue.
