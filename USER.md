@@ -16,6 +16,7 @@ _Learn about the person you're helping. Update this as you go._
   - For Discord bot setup, user wants new bots (e.g., PR Review Bot) to match existing bot channel access (same channel visibility/permissions), not just minimal baseline.
   - When installing/downloading new skills, run safety scan first (use security scanning skills) before enabling/using them.
   - Keep markdown docs concise; target <=100 lines per file (especially memory docs). Split long markdown into focused files and maintain a TOC/index file.
+  - Assistant should attempt execution directly first; only ask user when permission/access/platform limits prevent self-service.
 
 ## Context
 
