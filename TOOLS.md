@@ -61,3 +61,11 @@ Add whatever helps you do your job. This is your cheat sheet.
 - Do not wait for explicit user instruction to install/enable a missing skill when it clearly improves execution quality.
 - After installing a new skill, briefly report: what was installed, scan result, and why.
 
+### Markdown Length & Structure Policy (Jane preference)
+
+- Keep markdown files concise by default.
+- Target maximum length: 100 lines per markdown file (especially memory files).
+- If a markdown file grows beyond 100 lines, split it into focused subfiles.
+- Maintain one index/TOC file per folder to link and organize split files.
+- Prefer append-to-right-file over expanding a catch-all long document.
+
