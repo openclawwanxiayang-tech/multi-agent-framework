@@ -72,3 +72,24 @@ Add whatever helps you do your job. This is your cheat sheet.
 - Maintain one index/TOC file per folder to link and organize split files.
 - Prefer append-to-right-file over expanding a catch-all long document.
 
+
+## Codex Session Rules (Jane's preference)
+
+### How to Run
+- Use `codex` command (not sessions_spawn) to run in terminal
+- Worktree: /mnt/d/aiProjects/workspaces/DndCharacterBuilder-tech-debt
+- Branch: feature/tech-debt (for tech debt issues)
+
+### Session Lifecycle
+- **One session per issue** - spawn session when starting work on an issue
+- **Session stays alive until issue is closed** - not just until task completes
+- After PR merges and issue closes, THEN the session can close
+- Monitor PR status, address review comments, re-request reviews as needed
+
+### Workflow
+1. Create worktree if needed: `git worktree add /path -b feature/xxx`
+2. Spawn interactive codex: `codex` (in the worktree directory)
+3. Give Codex the issue to work on
+4. Monitor until PR is merged
+5. Close issue after merge
+6. Only THEN close the session
