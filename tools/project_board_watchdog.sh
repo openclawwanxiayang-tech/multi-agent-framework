@@ -20,12 +20,19 @@ required_views=(
   "Backlog"
 )
 
-if ! command -v gh >/dev/null 2>&1; then
+GH_BIN="${GH_BIN:-}"
+if [[ -z "$GH_BIN" ]]; then
+  GH_BIN="$(command -v gh 2>/dev/null || true)"
+fi
+if [[ -z "$GH_BIN" && -x "/home/linuxbrew/.linuxbrew/bin/gh" ]]; then
+  GH_BIN="/home/linuxbrew/.linuxbrew/bin/gh"
+fi
+if [[ -z "$GH_BIN" ]]; then
   echo "[$(date '+%F %T')] ERROR: gh not found" >> "$LOG_FILE"
   exit 0
 fi
 
-views_json="$(gh api graphql -f query='query($owner:String!,$number:Int!){ user(login:$owner){ projectV2(number:$number){ views(first:30){ nodes{ name } } } } }' -F owner="$OWNER" -F number="$PROJECT_NUMBER" 2>/dev/null || true)"
+views_json="$($GH_BIN api graphql -f query='query($owner:String!,$number:Int!){ user(login:$owner){ projectV2(number:$number){ views(first:30){ nodes{ name } } } } }' -F owner="$OWNER" -F number="$PROJECT_NUMBER" 2>/dev/null || true)"
 
 if [[ -z "$views_json" ]]; then
   echo "[$(date '+%F %T')] WARN: unable to read project views" >> "$LOG_FILE"
