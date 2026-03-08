@@ -1,0 +1,50 @@
+name: Validators
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - 'artifacts/tasks/**'
+      - 'validators/**'
+      - 'docs/schemas/**'
+      - 'scripts/**'
+      - '.github/workflows/validators.yml'
+  pull_request:
+    paths:
+      - 'artifacts/tasks/**'
+      - 'validators/**'
+      - 'docs/schemas/**'
+      - 'scripts/**'
+      - '.github/workflows/validators.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install validation deps
+        run: pip install jsonschema
+
+      - name: JSON schema validation
+        run: python3 validators/validate_json_schema.py
+
+      - name: Required files check
+        run: python3 validators/required_files_check.py
+
+      - name: Run spec validator
+        run: python3 validators/spec_validator.py
+
+      - name: Run design validator
+        run: python3 validators/design_validator.py
+
+      - name: Run code linter
+        run: python3 validators/code_linter.py
+
+      - name: Run QA checker
+        run: python3 validators/qa_checker.py

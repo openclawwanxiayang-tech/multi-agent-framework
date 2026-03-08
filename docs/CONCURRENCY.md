@@ -1,228 +1,115 @@
 # Concurrency & Locking Protocol
 
-> Version: 1.0.0  
-> Last Updated: 2026-02-23
+> Version: 1.1.0  
+> Last Updated: 2026-03-02
 
 ---
 
 ## Overview
 
-This document defines the concurrency/locking protocol for the repo-native task queue to prevent state corruption during multi-agent execution.
+This protocol defines safe concurrent access for the repo-native queue under `artifacts/tasks/{task_id}`.
+
+Canonical contract for lock files is `docs/schemas/lock.json`.
+
+Lock model: **lease with heartbeat + stale reclaim**.
 
 ---
 
-## Lock File Format
+## Lock File Contract (Canonical)
 
 ### Location
 
-```
-artifacts/tasks/{task-id}/.lock
-```
+`artifacts/tasks/{task-id}/.lock`
 
 ### Content
 
 ```json
 {
-  "agent_id": "agent-pm-1",
-  "started_at": "2026-02-23T10:00:00Z",
-  "ttl_seconds": 300,
-  "trace_id": "trace-abc123"
+  "$version": "1.0.0",
+  "owner_id": "agent-pm-1",
+  "host_id": "laptop-e1q327nm",
+  "pid": 4242,
+  "acquired_at": "2026-03-02T12:00:00Z",
+  "heartbeat_ts": "2026-03-02T12:00:15Z",
+  "ttl_seconds": 300
 }
 ```
 
-### Fields
+### Semantics
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `agent_id` | string | ID of agent holding the lock |
-| `started_at` | ISO8601 | When lock was acquired |
-| `ttl_seconds` | integer | Time-to-live (default: 300 = 5 min) |
-| `trace_id` | string | Trace for debugging |
+- `owner_id`: logical lock owner (agent/orchestrator)
+- `host_id` + `pid`: process identity for diagnostics
+- `acquired_at`: first lock acquisition timestamp
+- `heartbeat_ts`: refreshed periodically while lock holder is active
+- `ttl_seconds`: lease duration; stale if `now - heartbeat_ts > ttl_seconds`
 
 ---
 
-## Atomic Write Method
+## Acquisition & Release Rules
 
-### Method 1: Write to Temp + Atomic Rename (Recommended)
+1. If `.lock` does not exist, create it with atomic write.
+2. If `.lock` exists and lease is fresh, acquisition fails.
+3. If `.lock` exists and lease is stale, reclaim is allowed after emitting a lock-recovery event.
+4. Lock holder updates `heartbeat_ts` every `ttl_seconds / 3` (or faster).
+5. On normal completion, holder removes `.lock`.
+
+---
+
+## Atomic Write Rule
+
+All writes to `state.json` and `.lock` must use temp-file + rename in same directory.
 
 ```python
-import os
-import json
-import tempfile
+import json, os, tempfile
 
-def atomic_write(path, data):
-    """Write data atomically to prevent partial writes."""
-    dir_path = os.path.dirname(path)
-    
-    # Write to temp file in same directory (for atomic rename)
-    fd, temp_path = tempfile.mkstemp(dir=dir_path, suffix='.tmp')
-    
+def atomic_write_json(path, data):
+    directory = os.path.dirname(path)
+    fd, tmp = tempfile.mkstemp(dir=directory, suffix=".tmp")
     try:
-        with os.fdopen(fd, 'w') as f:
-            json.dump(data, f, indent=2)
-        
-        # Atomic rename
-        os.rename(temp_path, path)
-    except Exception:
-        # Clean up temp file on failure
-        if os.path.exists(temp_path):
-            os.unlink(temp_path)
-        raise
-```
-
-### Method 2: File Lock (flock)
-
-```python
-import fcntl
-
-def write_with_lock(path, data):
-    with open(path, 'w') as f:
-        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
-        try:
-            json.dump(data, f)
-        finally:
-            fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)  # atomic replace on POSIX + modern Windows
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
 ```
 
 ---
 
 ## Stale Lock Recovery
 
-### Detection
+A lock is stale when:
 
-A lock is stale if:
-
-```python
-import time
-from datetime import datetime, timedelta
-
-def is_lock_stale(lock_path):
-    with open(lock_path) as f:
-        lock = json.load(f)
-    
-    started = datetime.fromisoformat(lock['started_at'].replace('Z', '+00:00'))
-    ttl = lock.get('ttl_seconds', 300)
-    age = time.time() - started.timestamp()
-    
-    return age > ttl
+```text
+(now_utc - heartbeat_ts) > ttl_seconds
 ```
 
-### Recovery Rules
-
-1. **Check if agent still alive**: Look up `trace_id` in events.ndjson
-2. **If confirmed stale**: Force-release lock
-3. **If agent active**: Wait or escalate
-
-```python
-def recover_stale_lock(lock_path, task_id):
-    if not is_lock_stale(lock_path):
-        return False  # Lock is valid
-    
-    # Check if agent is still writing events
-    trace_id = get_lock_trace_id(lock_path)
-    if agent_has_recent_events(trace_id, seconds=60):
-        return False  # Agent still active
-    
-    # Force release
-    os.unlink(lock_path)
-    log_event(task_id, "lock_recovery", {"reason": "stale", "trace_id": trace_id})
-    return True
-```
+On stale reclaim:
+- remove stale `.lock`
+- append event `{event: "LOCK_RECLAIMED", details: {previous_owner, previous_pid}}`
+- continue acquisition with new owner
 
 ---
 
-## Concurrency Rules
+## Concurrency Guarantees
 
-### Safe Concurrent Operations
+Safe concurrently:
+- read `task.json`
+- read `state.json`
+- append `events.ndjson` (single line append per event)
 
-| Operation | Safe Concurrent? | Notes |
-|-----------|------------------|-------|
-| Read state.json | ✅ Yes | Multiple readers OK |
-| Read events.ndjson | ✅ Yes | Append-only log |
-| Append events.ndjson | ✅ Yes | Single append per event |
-| Create new task | ✅ Yes | Unique task IDs |
-| Read lock file | ✅ Yes | No modification |
-
-### Operations That Must Be Serialized
-
-| Operation | Reason |
-|-----------|--------|
-| Update state.json | Prevents race conditions |
-| Stage transitions | Only one stage at a time |
-| Artifact commits | Prevents merge conflicts |
-| Acquire lock | Only one writer per task |
+Must be serialized by lock:
+- stage transitions
+- `state.json` updates
+- lock replacement/recovery
 
 ---
 
-## Implementation Example
+## Source of Truth
 
-```python
-import os
-import json
-import time
-from pathlib import Path
-
-class TaskLock:
-    def __init__(self, task_id, agent_id, trace_id):
-        self.task_id = task_id
-        self.agent_id = agent_id
-        self.trace_id = trace_id
-        self.lock_path = Path(f"artifacts/tasks/{task_id}/.lock")
-    
-    def acquire(self, ttl_seconds=300):
-        # Check for existing lock
-        if self.lock_path.exists():
-            if is_lock_stale(self.lock_path):
-                recover_stale_lock(self.lock_path, self.task_id)
-            else:
-                raise LockException("Task is locked by another agent")
-        
-        # Create lock file
-        lock = {
-            "agent_id": self.agent_id,
-            "started_at": datetime.utcnow().isoformat() + "Z",
-            "ttl_seconds": ttl_seconds,
-            "trace_id": self.trace_id
-        }
-        
-        # Atomic write
-        atomic_write(self.lock_path, lock)
-    
-    def release(self):
-        if self.lock_path.exists():
-            os.unlink(self.lock_path)
-    
-    def __enter__(self):
-        self.acquire()
-        return self
-    
-    def __exit__(self, *args):
-        self.release()
-```
-
----
-
-## Usage
-
-```python
-# In orchestrator
-with TaskLock(task_id, agent_id, trace_id) as lock:
-    # Update state
-    state = read_state(task_id)
-    state['stage'] = 'DESIGN'
-    state['status'] = 'IN_PROGRESS'
-    atomic_write(state_path, state)
-    
-    # Do work...
-```
-
----
-
-## Related
-
-- See also: `docs/schemas/state.json`
-- Related issue: #3
-
----
-
-*Last updated: 2026-02-23*
+When docs conflict:
+1. `docs/schemas/lock.json`
+2. runtime validator behavior
+3. this document

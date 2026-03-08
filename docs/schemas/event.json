@@ -34,7 +34,7 @@
     },
     "type": {
       "type": "string",
-      "enum": ["artifact_write", "artifact_read", "tool_call", "validator", "stage_transition", "approval", "error"],
+      "enum": ["artifact_write", "artifact_read", "tool_call", "validator", "stage_transition", "approval", "error", "lock_reclaimed"],
       "description": "Event type"
     },
     "path": {

@@ -1,0 +1,18 @@
+{
+  "$version": "1.0.0",
+  "task_id": "T-2026-MVP-001",
+  "title": "Add Hello World Endpoint",
+  "created_at": "2026-03-02T11:38:00Z",
+  "mode": "pipeline",
+  "risk_tier": "low",
+  "definition_of_done": [
+    "Spec approved",
+    "Design approved",
+    "Implementation merged",
+    "Tests passing"
+  ],
+  "budgets": {
+    "max_tool_calls": 50,
+    "max_total_tokens": 100000
+  }
+}
