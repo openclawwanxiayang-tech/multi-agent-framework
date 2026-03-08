@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -18,5 +19,13 @@ func TestHelloHandler(t *testing.T) {
 
 	if w.Header().Get("Content-Type") != "application/json" {
 		t.Errorf("Expected Content-Type: application/json")
+	}
+
+	var payload map[string]string
+	if err := json.Unmarshal(w.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("Expected valid JSON body, got error: %v", err)
+	}
+	if payload["message"] != "Hello" {
+		t.Errorf("Expected message=Hello, got %q", payload["message"])
 	}
 }

@@ -29,6 +29,8 @@ def main() -> int:
         "state.json": load("state"),
         ".lock": load("lock"),
     }
+    event_schema = load("event")
+
     failed = 0
     for task_dir in TASKS.glob("*"):
         if not task_dir.is_dir():
@@ -43,6 +45,19 @@ def main() -> int:
             except Exception as e:
                 failed += 1
                 print(f"❌ {p}: {e}")
+
+        events_path = task_dir / "logs" / "events.ndjson"
+        if events_path.exists():
+            for i, line in enumerate(events_path.read_text(encoding="utf-8").splitlines(), start=1):
+                if not line.strip():
+                    continue
+                try:
+                    obj = json.loads(line)
+                    jsonschema.validate(instance=obj, schema=event_schema)
+                except Exception as e:
+                    failed += 1
+                    print(f"❌ {events_path}:{i}: {e}")
+
     if failed:
         return 1
     print("✅ JSON schema validation passed")

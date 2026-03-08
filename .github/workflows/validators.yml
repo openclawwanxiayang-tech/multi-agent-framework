@@ -7,12 +7,14 @@ on:
       - 'artifacts/tasks/**'
       - 'validators/**'
       - 'docs/schemas/**'
+      - 'scripts/**'
       - '.github/workflows/validators.yml'
   pull_request:
     paths:
       - 'artifacts/tasks/**'
       - 'validators/**'
       - 'docs/schemas/**'
+      - 'scripts/**'
       - '.github/workflows/validators.yml'
 
 jobs:

@@ -25,12 +25,14 @@ def validate_code(task_path: Path) -> tuple[bool, str]:
     
     # Check for test files
     test_files = list(impl_path.glob("*_test.py")) + list(impl_path.glob("*_test.go")) + list(impl_path.glob("test_*.py")) + list(impl_path.glob("test_*.go"))
+    if not test_files:
+        return False, "No test files found in impl/"
     
     # Basic syntax checks for common languages
     for f in files:
         if f.suffix == ".py":
             try:
-                compile(f.read_text(), f, "exec")
+                compile(f.read_text(encoding="utf-8"), str(f), "exec")
             except SyntaxError as e:
                 return False, f"Syntax error in {f.name}: {e}"
         elif f.suffix == ".go":

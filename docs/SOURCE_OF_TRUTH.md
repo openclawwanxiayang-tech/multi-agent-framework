@@ -31,7 +31,7 @@ Any schema or policy change must include:
 1. schema update
 2. validator/runtime update (if applicable)
 3. docs update
-4. changelog entry (`myOpenClaw/governance/CHANGELOG.md`)
+4. changelog entry (`CHANGELOG.md`)
 
 ## Runtime acceptance
 

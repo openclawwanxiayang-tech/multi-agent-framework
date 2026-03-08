@@ -31,12 +31,27 @@ def validate_spec(task_path: Path) -> tuple[bool, str]:
     if missing:
         return False, f"Missing sections: {', '.join(missing)}"
     
-    # Check acceptance criteria are present
-    if "Acceptance Criteria" in content:
-        lines = content.split("\n")
-        criteria_count = sum(1 for l in lines if l.strip().startswith(tuple('1234567890.-')))
-        if criteria_count < 1:
-            return False, "No acceptance criteria found"
+    # Check acceptance criteria are present within the Acceptance Criteria section
+    lines = content.split("\n")
+    section_start = None
+    for idx, line in enumerate(lines):
+        if "Acceptance Criteria" in line:
+            section_start = idx + 1
+            break
+
+    if section_start is None:
+        return False, "No acceptance criteria found"
+
+    section_end = len(lines)
+    for j in range(section_start, len(lines)):
+        if lines[j].lstrip().startswith("#"):
+            section_end = j
+            break
+
+    section_lines = lines[section_start:section_end]
+    criteria_count = sum(1 for l in section_lines if l.strip().startswith(tuple('1234567890.-')))
+    if criteria_count < 1:
+        return False, "No acceptance criteria found"
     
     return True, "Valid SPEC.md"
 
