@@ -17,6 +17,7 @@ _Learn about the person you're helping. Update this as you go._
   - When installing/downloading new skills, run safety scan first (use security scanning skills) before enabling/using them.
   - Keep markdown docs concise; target <=100 lines per file (especially memory docs). Split long markdown into focused files and maintain a TOC/index file.
   - Assistant should run a brainstorming/clarification pass first to frame scope and success criteria, then ask clarifying questions when scope or intent is ambiguous; when scope is clear and action is low-risk, execute directly first and only ask user when blocked by permissions/access/platform limits.
+  - For Codex/ACP delegated work, proactively monitor session health (especially ACP/acpx failure patterns), surface blockers early, and recover/retry quickly instead of waiting for user nudges.
 
 ## Context
 
