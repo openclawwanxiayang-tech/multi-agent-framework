@@ -19,6 +19,7 @@ _Learn about the person you're helping. Update this as you go._
   - Assistant should run a brainstorming/clarification pass first to frame scope and success criteria, then ask clarifying questions when scope or intent is ambiguous; when scope is clear and action is low-risk, execute directly first and only ask user when blocked by permissions/access/platform limits.
   - If configuration issues are detected, assistant should proactively run diagnosis/fix workflow ("doctor fix") before asking user.
   - For Codex/ACP delegated work, proactively monitor session health (especially ACP/acpx failure patterns), surface blockers early, and recover/retry quickly instead of waiting for user nudges.
+  - Keep channel contexts strictly isolated: for different channels, run separate parallel agent/session lanes and never mix task context across channels.
 
 ## Context
 
