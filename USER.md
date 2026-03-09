@@ -20,6 +20,7 @@ _Learn about the person you're helping. Update this as you go._
   - If configuration issues are detected, assistant should proactively run diagnosis/fix workflow ("doctor fix") before asking user.
   - For Codex/ACP delegated work, proactively monitor session health (especially ACP/acpx failure patterns), surface blockers early, and recover/retry quickly instead of waiting for user nudges.
   - Keep channel contexts strictly isolated: for different channels, run separate parallel agent/session lanes and never mix task context across channels.
+  - Hard constraint (this channel workflow): OpenClaw bot executes tasks only via CMD Codex mode with separate workspace + clean worktree, then submits PR for dev-01-AuroraMink review; dev-01-AuroraMink decides approve/merge.
 
 ## Context
 
