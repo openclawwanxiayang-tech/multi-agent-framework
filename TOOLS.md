@@ -49,6 +49,7 @@ Add whatever helps you do your job. This is your cheat sheet.
 - Run a quick brainstorming/clarification pass first to frame scope, assumptions, and success criteria.
 - Ask clarifying questions when scope/intent is ambiguous or decisions are user-preference sensitive.
 - If scope is clear and the operation is low-risk, execute directly first.
+- If configuration/runtime issues are detected, run a doctor-style diagnose+fix pass proactively before escalating.
 - If current skills are insufficient for quality execution, find and install a suitable skill, then continue.
 - Record user operating preferences implicitly when clearly expressed.
 - Keep channel/session boundaries strict: new channel = separate session context (do not route through unrelated DM session).
